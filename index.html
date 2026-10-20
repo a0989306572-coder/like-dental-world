@@ -4,166 +4,605 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>辣個牙科世界 Goddenworld</title>
+  <meta name="theme-color" content="#f7f8fa">
+  <title>辣個牙科世界 Goddenworld</title>
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --blue: #3568d4;
+      --blue-light: #edf3ff;
+      --ink: #242936;
+      --muted: #7b8495;
+      --line: #e9ecf1;
+      --bg: #f5f6f8;
+      --white: #fff;
     }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: #f7f5f1;
-      color: #333;
-      font-family: Arial, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      font-size: 14px;
     }
-
-    header {
-      background: #fff;
-      border-bottom: 1px solid #e8e2d9;
-      padding: 20px;
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
     }
-
     .nav {
-      max-width: 900px;
+      max-width: 1240px;
       margin: auto;
+      padding: 13px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .brand { min-width: 225px; }
+    .brand-name {
+      font-size: 20px;
+      font-weight: 850;
+      letter-spacing: -.5px;
+    }
+    .brand-en {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 3px;
+    }
+    .search {
+      flex: 1;
+      max-width: 480px;
+      background: #f4f6f9;
+      border: 1px solid #eef0f4;
+      border-radius: 10px;
+      padding: 11px 14px;
+      outline: none;
+      min-width: 70px;
+    }
+    .search:focus { border-color: #9db8f5; background: white; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-link { color: #596274; white-space: nowrap; }
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 15px;
+      font-weight: 700;
+    }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-light { background: var(--blue-light); color: var(--blue); }
+    .page { max-width: 1240px; margin: 24px auto; padding: 0 20px; }
+    .hero {
+      background: linear-gradient(115deg, #1d2e57, #315bb0);
+      color: white;
+      border-radius: 16px;
+      padding: 25px 28px;
+      margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 20px;
     }
-
-    .logo {
-      font-size: 23px;
-      font-weight: bold;
-      color: #6d8065;
+    .hero h1 { margin: 0 0 9px; font-size: 26px; letter-spacing: -.6px; }
+    .hero p { margin: 0; color: #d9e4ff; line-height: 1.7; }
+    .hero-tag {
+      border: 1px solid #8da9eb;
+      color: #f2f6ff;
+      border-radius: 99px;
+      padding: 9px 13px;
+      white-space: nowrap;
     }
-
-    button {
-      border: 0;
-      border-radius: 20px;
-      background: #71856a;
-      color: white;
-      padding: 10px 18px;
-      cursor: pointer;
-      font-size: 14px;
+    .layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 265px;
+      gap: 20px;
+      align-items: start;
     }
-
-    main {
-      max-width: 760px;
-      margin: 35px auto;
-      padding: 0 16px;
-    }
-
-    .welcome {
-      background: #e8ede3;
-      border-radius: 18px;
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-
-    .welcome h1 {
-      margin-top: 0;
-      font-size: 27px;
-    }
-
-    .welcome p {
-      line-height: 1.8;
-      color: #5b6256;
-    }
-
-    .post {
+    .panel {
       background: white;
-      border: 1px solid #eee8df;
-      border-radius: 14px;
-      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      overflow: hidden;
       margin-bottom: 16px;
     }
-
+    .panel-title {
+      padding: 16px 17px 12px;
+      font-weight: 800;
+      font-size: 15px;
+    }
+    .panel-body { padding: 0 15px 16px; }
+    .section-label {
+      color: #9aa1ad;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 10px 17px 7px;
+    }
+    .board-list { padding: 0 8px 10px; }
+    .board {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 9px;
+      border-radius: 9px;
+      color: #4b5362;
+      margin-bottom: 2px;
+    }
+    .board:hover, .board.active { background: var(--blue-light); color: var(--blue); }
+    .board-icon {
+      width: 30px; height: 30px; display: grid; place-items: center;
+      border-radius: 9px; background: #f1f3f7; font-weight: 850;
+      color: #576276; flex-shrink: 0;
+    }
+    .board.active .board-icon { background: #dce7ff; color: var(--blue); }
+    .board-name { font-weight: 650; }
+    .board-count { margin-left: auto; font-size: 11px; color: #9aa1ad; }
+    .small-note { font-size: 12px; line-height: 1.7; color: var(--muted); }
+    .compose {
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; flex-shrink: 0;
+      background: #eaf0ff; color: #315bb0; font-weight: 850;
+    }
+    .compose-fake {
+      flex: 1; text-align: left; border: 1px solid var(--line);
+      background: #f8f9fb; color: #939aaa; padding: 11px;
+      border-radius: 9px;
+    }
+    .feed-tabs {
+      display: flex; gap: 23px; align-items: center;
+      border-bottom: 1px solid var(--line); padding: 0 16px;
+      background: white; border-radius: 13px 13px 0 0;
+    }
+    .feed-tab {
+      padding: 16px 0 13px; color: var(--muted);
+      border: 0; border-bottom: 3px solid transparent; background: none;
+      font-weight: 700;
+    }
+    .feed-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .feed-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 17px; background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    .feed-head strong { font-size: 15px; }
+    .feed-head span { color: var(--muted); font-size: 12px; }
+    .post {
+      padding: 17px;
+      background: white;
+      border-bottom: 1px solid var(--line);
+      transition: background .15s;
+    }
+    .post:hover { background: #fdfdff; }
+    .post:last-child { border-bottom: 0; }
+    .post-meta { display: flex; align-items: center; gap: 9px; }
+    .post-meta .avatar { width: 34px; height: 34px; font-size: 12px; }
+    .author { font-weight: 750; font-size: 13px; }
+    .verified { color: #2b70db; font-size: 12px; }
+    .meta-sub { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .level {
+      background: #f0f3f8; color: #687387; border-radius: 5px;
+      padding: 3px 5px; font-size: 10px; font-weight: 800;
+    }
     .tag {
-      color: #71856a;
-      font-size: 13px;
-      font-weight: bold;
+      margin-left: auto; background: #f3f5f8; color: #737e91;
+      border-radius: 5px; padding: 5px 7px; font-size: 11px;
+      white-space: nowrap;
     }
-
-    .post h2 {
-      font-size: 19px;
-      margin: 10px 0;
+    .post h2 { font-size: 16px; line-height: 1.55; margin: 13px 0 7px; }
+    .post p { margin: 0; color: #606a7a; font-size: 13px; line-height: 1.8; }
+    .post-actions {
+      display: flex; align-items: center; gap: 16px; margin-top: 14px;
+      color: #8992a1; font-size: 12px;
     }
-
-    .post p {
-      line-height: 1.8;
-      color: #666;
+    .post-actions button {
+      border: 0; background: none; padding: 0; color: inherit;
     }
-
-    .meta {
-      color: #999;
-      font-size: 13px;
+    .post-actions button:hover { color: var(--blue); }
+    .post-actions .liked { color: #e45b76; }
+    .hot-number {
+      width: 23px; height: 23px; display: grid; place-items: center;
+      border-radius: 6px; background: #f2f4f8; color: #7d8797;
+      font-size: 11px; font-weight: 800; flex-shrink: 0;
     }
-
-    footer {
-      text-align: center;
-      padding: 30px 16px;
-      color: #999;
-      font-size: 13px;
+    .hot-list { list-style: none; margin: 0; padding: 0 15px 15px; }
+    .hot-list li { display: flex; align-items: flex-start; gap: 9px; margin-top: 13px; }
+    .hot-list a { font-size: 12px; line-height: 1.65; font-weight: 650; }
+    .hot-list a:hover { color: var(--blue); }
+    .member-level {
+      display: flex; align-items: center; gap: 12px;
+      background: #f4f7ff; border-radius: 10px; padding: 13px;
     }
-
-    @media (max-width: 500px) {
-      .welcome h1 {
-        font-size: 23px;
-      }
-
-      .logo {
-        font-size: 19px;
-      }
+    .level-badge {
+      width: 48px; height: 48px; display: grid; place-items: center;
+      border-radius: 12px; background: #dce7ff; color: #315bb0;
+      font-weight: 900; font-size: 20px;
+    }
+    .member-name { font-weight: 800; }
+    .member-sub { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .progress { height: 6px; border-radius: 99px; background: #e8edf6; margin: 13px 0 8px; overflow: hidden; }
+    .progress-fill { width: 72%; height: 100%; background: var(--blue); border-radius: inherit; }
+    .full-btn { width: 100%; margin-top: 12px; }
+    .rule { background: #fff9eb; border: 1px solid #f6e8c7; color: #79623a; padding: 13px; border-radius: 9px; line-height: 1.8; font-size: 12px; }
+    .notice { background: #f4f7ff; border: 1px solid #e1e9ff; padding: 14px; border-radius: 10px; }
+    .notice strong { display: block; margin-bottom: 7px; }
+    .notice p { margin: 0; line-height: 1.7; font-size: 12px; color: #65718a; }
+    .footer { text-align: center; padding: 28px 10px; color: #9aa1ad; font-size: 11px; line-height: 1.8; }
+    .empty { display: none; background: white; padding: 30px 15px; text-align: center; color: var(--muted); }
+    @media (max-width: 1000px) {
+      .layout { grid-template-columns: 190px minmax(0,1fr); }
+      .right-col { display: none; }
+      .brand { min-width: 185px; }
+      .nav { gap: 15px; }
+    }
+    @media (max-width: 650px) {
+      .nav { padding: 12px 14px; gap: 10px; flex-wrap: wrap; }
+      .brand { min-width: 0; flex: 1; }
+      .brand-name { font-size: 17px; }
+      .search { order: 3; flex-basis: 100%; max-width: none; }
+      .nav-link { display: none; }
+      .nav-actions { gap: 6px; }
+      .nav-actions .btn { padding: 9px 11px; }
+      .page { margin: 14px auto; padding: 0 12px; }
+      .hero { padding: 21px 18px; }
+      .hero h1 { font-size: 22px; }
+      .hero-tag { display: none; }
+      .layout { display: block; }
+      .left-col { margin-bottom: 15px; }
+      .left-col .board-list { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; }
+      .left-col .section-label { padding-top: 12px; }
+      .board { flex-shrink: 0; padding: 7px; }
+      .board-name { white-space: nowrap; font-size: 12px; }
+      .board-icon { width: 27px; height: 27px; }
+      .left-col .panel:not(.boards-panel) { display: none; }
+      .post { padding: 14px; }
+      .post h2 { font-size: 15px; }
+      .feed-tabs { gap: 20px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="nav">
-     <h1>辣個牙科世界 Goddenworld 🦷</h1>
-      <button onclick="alert('會員註冊功能將在下一階段加入！')">
-        會員登入
-      </button>
-    </div>
+  <header class="topbar">
+    <nav class="nav">
+      <a class="brand" href="#">
+        <div class="brand-name">🦷 辣個牙科世界</div>
+        <div class="brand-en">GODDENWORLD</div>
+      </a>
+      <input class="search" id="searchInput" placeholder="⌕ 搜尋看板、文章、牙科職涯……" aria-label="搜尋文章">
+      <div class="nav-actions">
+        <a class="nav-link" href="#boards">看板</a>
+        <button class="btn btn-light" id="noticeBtn">通知 <span>2</span></button>
+        <button class="btn btn-primary" id="loginBtn">登入／註冊</button>
+      </div>
+    </nav>
   </header>
 
-  <main>
-    <section class="welcome">
-     <h1>辣個牙科世界 Goddenworld 🦷</h1>
-      <p>
-        分享生活、聊聊心事、認識有趣的人。
-        這裡是屬於每個人的交流空間。
-      </p>
-      <button onclick="alert('發文功能將在下一階段加入！')">
-        ＋ 發表文章
-      </button>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <h1>牙科人的第二個休息室。</h1>
+        <p>診間裡不好說的，來這裡聊聊。<br>職涯、健保、八卦、開業，牙科大小事都能交流。</p>
+      </div>
+      <div class="hero-tag">🦷 專屬牙科人的交流論壇</div>
     </section>
 
-    <article class="post">
-      <div class="tag">生活日常</div>
-      <h2>最近有什麼小事，讓你覺得很幸福？</h2>
-      <p>可能是一杯好喝的咖啡、一場舒服的雨，或是下班後終於能好好休息。</p>
-      <div class="meta">小日子編輯 · 示範文章</div>
-    </article>
+    <div class="layout">
+      <aside class="left-col">
+        <section class="panel">
+          <div class="panel-title">✦ 快速入口</div>
+          <div class="panel-body">
+            <button class="btn btn-primary full-btn" id="writeBtn">＋ 發表文章</button>
+            <p class="small-note">分享經驗、提出問題，讓更多牙科人一起交流。</p>
+          </div>
+        </section>
+        <section class="panel boards-panel" id="boards">
+          <div class="panel-title">探索看板</div>
+          <div class="section-label">熱門分類</div>
+          <div class="board-list">
+            <a href="#" class="board active" data-category="全部"><span class="board-icon">推</span><span class="board-name">推薦文章</span></a>
+            <a href="#" class="board" data-category="八卦閒聊"><span class="board-icon">卦</span><span class="board-name">八卦閒聊</span><span class="board-count">42</span></a>
+            <a href="#" class="board" data-category="健保申報／職涯"><span class="board-icon">保</span><span class="board-name">健保申報／職涯</span></a>
+            <a href="#" class="board" data-category="課程／進修"><span class="board-icon">課</span><span class="board-name">課程／進修</span></a>
+            <a href="#" class="board" data-category="開業"><span class="board-icon">業</span><span class="board-name">開業</span></a>
+            <a href="#" class="board" data-category="交友"><span class="board-icon">友</span><span class="board-name">交友</span></a>
+            <a href="#" class="board" data-category="徵人／徵工作"><span class="board-icon">職</span><span class="board-name">徵人／徵工作</span></a>
+            <a href="#" class="board" data-category="生活／吃喝玩樂"><span class="board-icon">玩</span><span class="board-name">生活／吃喝玩樂</span></a>
+            <a href="#" class="board" data-category="理財"><span class="board-icon">財</span><span class="board-name">理財</span></a>
+            <a href="#" class="board" data-category="學生事務交流"><span class="board-icon">學</span><span class="board-name">學生事務交流</span></a>
+            <a href="#" class="board" data-category="團購"><span class="board-icon">團</span><span class="board-name">團購</span></a>
+            <a href="#" class="board" data-category="二手／買賣"><span class="board-icon">售</span><span class="board-name">二手／買賣</span></a>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">關於 Goddenworld</div>
+          <div class="panel-body small-note">
+            讓牙醫師、牙助、牙技師、學生與產業夥伴，都能找到交流的地方。
+          </div>
+        </section>
+      </aside>
 
-    <article class="post">
-      <div class="tag">心情交流</div>
-      <h2>長大以後，你還有可以說心事的朋友嗎？</h2>
-      <p>有時候不是沒有朋友，只是生活忙碌，能好好聊天的時間變少了。</p>
-      <div class="meta">小日子編輯 · 示範文章</div>
-    </article>
+      <section class="center-col">
+        <div class="panel">
+          <div class="feed-tabs">
+            <button class="feed-tab active" data-feed="推薦">推薦</button>
+            <button class="feed-tab" data-feed="全部">全部</button>
+            <button class="feed-tab" data-feed="追蹤">追蹤</button>
+          </div>
+          <div class="feed-head">
+            <strong id="feedTitle">大家都在聊</strong>
+            <span id="postCount">熱門討論</span>
+          </div>
+          <div id="postList">
+            <article class="post" data-category="八卦閒聊" data-title="老闆說大家都是一家人接著就宣布調降拆帳">
+              <div class="post-meta">
+                <div class="avatar">匿</div>
+                <div><div class="author">牙醫師・匿名 <span class="level">Lv14</span></div><div class="meta-sub">八卦閒聊・42 分鐘前</div></div>
+                <span class="tag">熱門</span>
+              </div>
+              <h2>老闆說「大家都是一家人」，接著就宣布調降拆帳</h2>
+              <p>診所開會第一句就是我們是一家人，接著宣布拆帳從 40% 降到 35%，理由是耗材漲價。想問大家現在北部一般科拆帳多少？是不是該找下一間了。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>300</span></button><button class="comment-btn">💬 364</button><span>↗ 分享</span></div>
+            </article>
 
-    <article class="post">
-      <div class="tag">自由討論</div>
-      <h2>如果明天突然放假，你最想做什麼？</h2>
-      <p>不用工作、不用趕時間，留一整天給自己，你會怎麼安排？</p>
-      <div class="meta">小日子編輯 · 示範文章</div>
-    </article>
+            <article class="post" data-category="健保申報／職涯" data-title="健保91碼複雜性根管核刪申復成功經驗分享">
+              <div class="post-meta">
+                <div class="avatar">冠</div>
+                <div><div class="author">冠宇 <span class="verified">✔</span>・牙醫師 <span class="level">Lv9</span></div><div class="meta-sub">健保申報／職涯・3 小時前</div></div>
+              </div>
+              <h2>健保 91 碼複雜性根管核刪，申復成功經驗分享</h2>
+              <p>這季被核刪了三件複雜性根管，主因是術前 X 光看不出根管鈣化。申復時補了 CBCT 截圖與根管長度量測紀錄，三件全數補回。整理一下申復書怎麼寫比較容易過：影像、治療紀錄與審查條文都要對應。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>261</span></button><button class="comment-btn">💬 221</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="八卦閒聊" data-title="牙助是不是到哪間都被當萬能小幫手">
+              <div class="post-meta">
+                <div class="avatar">匿</div>
+                <div><div class="author">牙助・匿名 <span class="level">Lv3</span></div><div class="meta-sub">八卦閒聊・2 小時前</div></div>
+                <span class="tag">討論中</span>
+              </div>
+              <h2>牙助是不是到哪間都被當萬能小幫手</h2>
+              <p>跟診、櫃台、消毒、打掃、經營 IG 全都是我，薪水還是基本工資多一點。想知道大家的待遇。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>218</span></button><button class="comment-btn">💬 22</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="課程／進修" data-title="隱形矯正進階課心得附著體設計是成敗關鍵">
+              <div class="post-meta">
+                <div class="avatar">思</div>
+                <div><div class="author">思妤醫師 <span class="verified">✔</span>・牙醫師 <span class="level">Lv11</span></div><div class="meta-sub">課程／進修・1 天前</div></div>
+              </div>
+              <h2>隱形矯正進階課心得：附著體設計是成敗關鍵</h2>
+              <p>兩天課程，實作佔一半。最大收穫是附著體位置與牙齒移動的對應，還有如何判斷什麼時候該加 IPR。學分 12 點，推薦給剛開始做隱形矯正的醫師。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>164</span></button><button class="comment-btn">💬 96</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="開業" data-title="開業前一定要想清楚的7件事設備採購篇">
+              <div class="post-meta">
+                <div class="avatar">禾</div>
+                <div><div class="author">禾森齒材 <span class="verified">✔</span>・牙材廠商 <span class="level">Lv6</span></div><div class="meta-sub">開業・15 小時前</div></div>
+              </div>
+              <h2>開業前一定要想清楚的 7 件事：設備採購篇</h2>
+              <p>協助過不少診所開業，整理常見的設備決策：牙椅數量、CBCT 要不要第一年就買、口掃與技工所的相容性、消毒動線……以下逐項說明。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>122</span></button><button class="comment-btn">💬 180</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="交友" data-title="台北有沒有喜歡聽獨立樂團的牙科人">
+              <div class="post-meta">
+                <div class="avatar">于</div>
+                <div><div class="author">于庭 <span class="verified">✔</span>・牙醫師 <span class="level">Lv9</span></div><div class="meta-sub">交友・6 小時前</div></div>
+              </div>
+              <h2>台北有沒有喜歡聽獨立樂團的牙科人？</h2>
+              <p>下個月有幾場不錯的演出，想找人一起去。喜歡貓的加分。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>70</span></button><button class="comment-btn">💬 51</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="徵人／徵工作" data-title="高雄左營植牙診所誠徵全職牙醫師">
+              <div class="post-meta">
+                <div class="avatar">承</div>
+                <div><div class="author">承翰 <span class="verified">✔</span>・牙醫師 <span class="level">Lv14</span></div><div class="meta-sub">徵人／徵工作・5 小時前</div></div>
+                <span class="tag">徵人</span>
+              </div>
+              <h2>【徵人】高雄左營 植牙診所誠徵全職牙醫師 1 名</h2>
+              <p>位置近高鐵站，條件為保障底薪加拆帳，植牙病例多，可帶刀。設備包含 CBCT、口掃與顯微鏡，歡迎先來參觀。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>56</span></button><button class="comment-btn">💬 40</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="生活／吃喝玩樂" data-title="大安區下班後還開著的好吃宵夜整理">
+              <div class="post-meta">
+                <div class="avatar">雅</div>
+                <div><div class="author">雅婷 <span class="verified">✔</span>・牙助 <span class="level">Lv10</span></div><div class="meta-sub">生活／吃喝玩樂・18 小時前</div></div>
+              </div>
+              <h2>大安區下班後還開著的好吃宵夜整理</h2>
+              <p>晚診結束都九點半了，整理幾家我常去的宵夜店：鹹粥、滷味、豆花……</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>93</span></button><button class="comment-btn">💬 70</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="理財" data-title="牙醫的理財大家執業幾年存到第一桶金">
+              <div class="post-meta">
+                <div class="avatar">匿</div>
+                <div><div class="author">牙醫師・匿名 <span class="level">Lv14</span></div><div class="meta-sub">理財・2 天前</div></div>
+              </div>
+              <h2>牙醫的理財：大家執業幾年存到第一桶金？</h2>
+              <p>執業第五年，最近開始認真規劃。好奇大家是 ETF 為主還是會買房？有沒有人在做期貨或量化交易？</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>130</span></button><button class="comment-btn">💬 88</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="徵人／徵工作" data-title="跟診三年牙助想找台北週休二日的診所">
+              <div class="post-meta">
+                <div class="avatar">匿</div>
+                <div><div class="author">牙助・匿名 <span class="level">Lv10</span></div><div class="meta-sub">徵人／徵工作・8 小時前</div></div>
+                <span class="tag">徵工作</span>
+              </div>
+              <h2>【徵工作】跟診三年牙助，想找台北週休二日的診所</h2>
+              <p>熟悉植牙與矯正跟診、會操作口掃與 CBCT 拍攝。希望週休二日，晚診一週不超過兩天，大安區附近更好。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>33</span></button><button class="comment-btn">💬 11</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="學生事務交流" data-title="國考二階臨床科目學長姐推薦哪一版共筆">
+              <div class="post-meta">
+                <div class="avatar">育</div>
+                <div><div class="author">育誠 <span class="verified">✔</span>・牙醫學生 <span class="level">Lv2</span></div><div class="meta-sub">學生事務交流・11 小時前</div></div>
+              </div>
+              <h2>國考二階臨床科目，學長姐推薦哪一版共筆？</h2>
+              <p>明年要考二階，想請教各科目準備的順序，以及大家用哪一版共筆。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>27</span></button><button class="comment-btn">💬 13</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="團購" data-title="一次性吸唾管檢診手套10月團購">
+              <div class="post-meta">
+                <div class="avatar">禾</div>
+                <div><div class="author">禾森齒材 <span class="verified">✔</span>・牙材廠商 <span class="level">Lv6</span></div><div class="meta-sub">團購・1 天前</div></div>
+                <span class="tag">團購</span>
+              </div>
+              <h2>【團購】一次性吸唾管、檢診手套 10 月團購</h2>
+              <p>本月品項：吸唾管、檢診手套（S／M／L）、口罩。滿 20 箱免運，月底截止。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>42</span></button><button class="comment-btn">💬 33</button><span>↗ 分享</span></div>
+            </article>
+
+            <article class="post" data-category="二手／買賣" data-title="九成新口掃機因診所整併釋出">
+              <div class="post-meta">
+                <div class="avatar">家</div>
+                <div><div class="author">家豪 <span class="verified">✔</span>・牙醫師 <span class="level">Lv5</span></div><div class="meta-sub">二手／買賣・4 小時前</div></div>
+              </div>
+              <h2>【售】九成新口掃機，因診所整併釋出</h2>
+              <p>使用一年半，有保固到明年。台北、新竹可面交。</p>
+              <div class="post-actions"><button class="like-btn">♡ <span>16</span></button><button class="comment-btn">💬 14</button><span>↗ 分享</span></div>
+            </article>
+          </div>
+          <div class="empty" id="emptyState">沒有找到符合的文章，試試其他關鍵字。</div>
+        </div>
+      </section>
+
+      <aside class="right-col">
+        <section class="panel">
+          <div class="panel-title">我的等級</div>
+          <div class="panel-body">
+            <div class="member-level">
+              <div class="level-badge">9</div>
+              <div><div class="member-name">冠宇</div><div class="member-sub">牙醫師・恆牙</div><div class="member-sub">960 EXP</div></div>
+            </div>
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="small-note">距 Lv10 還差 90 經驗值</div>
+            <button class="btn btn-light full-btn" id="levelBtn">看等級與解鎖內容</button>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">本月熱門文章 TOP 5</div>
+          <ol class="hot-list">
+            <li><span class="hot-number">1</span><a href="#postList">老闆說「大家都是一家人」，接著就宣布調降拆帳</a></li>
+            <li><span class="hot-number">2</span><a href="#postList">健保 91 碼複雜性根管核刪，申復成功經驗分享</a></li>
+            <li><span class="hot-number">3</span><a href="#postList">牙助是不是到哪間都被當萬能小幫手</a></li>
+            <li><span class="hot-number">4</span><a href="#postList">【公告】歡迎來到辣個牙科世界！新手必看</a></li>
+            <li><span class="hot-number">5</span><a href="#postList">隱形矯正進階課心得：附著體設計是成敗關鍵</a></li>
+          </ol>
+        </section>
+        <section class="panel">
+          <div class="panel-title">📌 置頂公告</div>
+          <div class="panel-body">
+            <div class="notice"><strong>【公告】歡迎來到辣個牙科世界！新手必看</strong><p>先看站規再發文，讓牙科人安心交流。</p></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">站規重點</div>
+          <div class="panel-body">
+            <div class="rule">匿名不代表可以人身攻擊。禁止點名可辨識的個人或診所，附圖請先去識別化，違規文章由管理員處理。</div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      辣個牙科世界 Goddenworld © 2026<br>
+      一起聊聊牙齒大小事 🦷<br>
+      本頁目前為展示原型，會員、發文與留言功能尚未啟用。
+    </footer>
   </main>
 
-  <footer>
- 辣個牙科世界 Goddenworld © 2026 · 一起聊聊牙齒大小事 🦷
-  </footer>
+  <script>
+    const posts = [...document.querySelectorAll(".post")];
+    const searchInput = document.getElementById("searchInput");
+    const emptyState = document.getElementById("emptyState");
+    const postCount = document.getElementById("postCount");
+    let selectedCategory = "全部";
+    let selectedFeed = "推薦";
+
+    function filterPosts() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      let shown = 0;
+      posts.forEach(post => {
+        const matchesCategory = selectedCategory === "全部" || post.dataset.category === selectedCategory;
+        const matchesKeyword = (post.dataset.title + " " + post.innerText).toLowerCase().includes(keyword);
+        const visible = matchesCategory && matchesKeyword;
+        post.style.display = visible ? "" : "none";
+        if (visible) shown++;
+      });
+      emptyState.style.display = shown ? "none" : "block";
+      postCount.textContent = shown + " 篇文章";
+    }
+
+    searchInput.addEventListener("input", filterPosts);
+
+    document.querySelectorAll(".board").forEach(board => {
+      board.addEventListener("click", event => {
+        event.preventDefault();
+        selectedCategory = board.dataset.category;
+        document.querySelectorAll(".board").forEach(item => item.classList.remove("active"));
+        board.classList.add("active");
+        document.getElementById("feedTitle").textContent =
+          selectedCategory === "全部" ? "大家都在聊" : selectedCategory;
+        filterPosts();
+        if (window.innerWidth <= 650) {
+          document.querySelector(".center-col").scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
+
+    document.querySelectorAll(".feed-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        selectedFeed = tab.dataset.feed;
+        document.querySelectorAll(".feed-tab").forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
+        if (selectedFeed === "追蹤") {
+          alert("追蹤功能尚未啟用，待會員系統完成後開放。");
+        } else {
+          document.getElementById("feedTitle").textContent =
+            selectedFeed === "全部" ? "全部文章" : "大家都在聊";
+        }
+      });
+    });
+
+    document.querySelectorAll(".like-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        button.classList.toggle("liked");
+        alert("目前是展示介面，按讚紀錄尚未儲存。");
+      });
+    });
+
+    document.querySelectorAll(".comment-btn").forEach(button => {
+      button.addEventListener("click", () => alert("留言功能尚未啟用，後續會接上會員與資料庫。"));
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      alert("登入／註冊功能尚未啟用，下一階段會串接 Supabase。");
+    });
+    document.getElementById("writeBtn").addEventListener("click", () => {
+      alert("發文功能尚未啟用，完成會員登入與資料庫串接後開放。");
+    });
+    document.getElementById("noticeBtn").addEventListener("click", () => {
+      alert("通知功能尚未啟用。");
+    });
+    document.getElementById("levelBtn").addEventListener("click", () => {
+      alert("會員等級與解鎖規則會在後續階段製作。");
+    });
+  </script>
 </body>
 </html>
