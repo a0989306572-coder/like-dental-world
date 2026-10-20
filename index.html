@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小日子論壇</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f5f1;
+      color: #333;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e8e2d9;
+      padding: 20px;
+    }
+
+    .nav {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: bold;
+      color: #6d8065;
+    }
+
+    button {
+      border: 0;
+      border-radius: 20px;
+      background: #71856a;
+      color: white;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 35px auto;
+      padding: 0 16px;
+    }
+
+    .welcome {
+      background: #e8ede3;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .welcome h1 {
+      margin-top: 0;
+      font-size: 27px;
+    }
+
+    .welcome p {
+      line-height: 1.8;
+      color: #5b6256;
+    }
+
+    .post {
+      background: white;
+      border: 1px solid #eee8df;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      color: #71856a;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .post h2 {
+      font-size: 19px;
+      margin: 10px 0;
+    }
+
+    .post p {
+      line-height: 1.8;
+      color: #666;
+    }
+
+    .meta {
+      color: #999;
+      font-size: 13px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 16px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    @media (max-width: 500px) {
+      .welcome h1 {
+        font-size: 23px;
+      }
+
+      .logo {
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo">☘ 小日子論壇</div>
+      <button onclick="alert('會員註冊功能將在下一階段加入！')">
+        會員登入
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="welcome">
+      <h1>歡迎來到小日子 🌿</h1>
+      <p>
+        分享生活、聊聊心事、認識有趣的人。
+        這裡是屬於每個人的交流空間。
+      </p>
+      <button onclick="alert('發文功能將在下一階段加入！')">
+        ＋ 發表文章
+      </button>
+    </section>
+
+    <article class="post">
+      <div class="tag">生活日常</div>
+      <h2>最近有什麼小事，讓你覺得很幸福？</h2>
+      <p>可能是一杯好喝的咖啡、一場舒服的雨，或是下班後終於能好好休息。</p>
+      <div class="meta">小日子編輯 · 示範文章</div>
+    </article>
+
+    <article class="post">
+      <div class="tag">心情交流</div>
+      <h2>長大以後，你還有可以說心事的朋友嗎？</h2>
+      <p>有時候不是沒有朋友，只是生活忙碌，能好好聊天的時間變少了。</p>
+      <div class="meta">小日子編輯 · 示範文章</div>
+    </article>
+
+    <article class="post">
+      <div class="tag">自由討論</div>
+      <h2>如果明天突然放假，你最想做什麼？</h2>
+      <p>不用工作、不用趕時間，留一整天給自己，你會怎麼安排？</p>
+      <div class="meta">小日子編輯 · 示範文章</div>
+    </article>
+  </main>
+
+  <footer>
+    小日子論壇 © 2026 · 分享生活中的每一個故事
+  </footer>
+</body>
+</html>
