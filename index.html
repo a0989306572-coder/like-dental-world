@@ -239,6 +239,34 @@
     .notice p { margin: 0; line-height: 1.7; font-size: 12px; color: #65718a; }
     .footer { text-align: center; padding: 28px 10px; color: #9aa1ad; font-size: 11px; line-height: 1.8; }
     .empty { display: none; background: white; padding: 30px 15px; text-align: center; color: var(--muted); }
+    .site-dialog {
+      width: min(440px, calc(100% - 32px));
+      max-height: calc(100% - 32px);
+      padding: 22px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .site-dialog::backdrop { background: rgb(36 41 54 / 50%); }
+    .site-dialog h2 { margin: 0; font-size: 20px; }
+    .dialog-head, .dialog-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .dialog-head { justify-content: space-between; margin-bottom: 14px; }
+    .dialog-form { display: grid; gap: 12px; }
+    .dialog-form[hidden] { display: none; }
+    .dialog-form label { display: grid; gap: 5px; font-weight: 700; }
+    .dialog-form input, .dialog-form select, .dialog-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+    }
+    .dialog-form textarea { resize: vertical; }
+    .dialog-message { margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+    .dialog-message:empty { display: none; }
+    .member-post p { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .member-post h2 { overflow-wrap: anywhere; }
+    #mobileWriteBtn { display: none; }
     @media (max-width: 1000px) {
       .layout { grid-template-columns: 190px minmax(0,1fr); }
       .right-col { display: none; }
@@ -253,6 +281,7 @@
       .nav-link { display: none; }
       .nav-actions { gap: 6px; }
       .nav-actions .btn { padding: 9px 11px; }
+      #mobileWriteBtn { display: inline-block; }
       .page { margin: 14px auto; padding: 0 12px; }
       .hero { padding: 21px 18px; }
       .hero h1 { font-size: 22px; }
@@ -340,8 +369,10 @@
           </div>
           <div class="feed-head">
             <strong id="feedTitle">大家都在聊</strong>
+            <button class="btn btn-primary" id="mobileWriteBtn">＋ 發表文章</button>
             <span id="postCount">熱門討論</span>
           </div>
+          <p id="feedMessage" class="dialog-message" role="status"></p>
           <div id="postList">
             <article class="post" data-category="八卦閒聊" data-title="老闆說大家都是一家人接著就宣布調降拆帳">
               <div class="post-meta">
@@ -523,12 +554,44 @@
     <footer class="footer">
       辣個牙科世界 Goddenworld © 2026<br>
       一起聊聊牙齒大小事 🦷<br>
-      本頁目前為展示原型，會員、發文與留言功能尚未啟用。
+      留言功能尚未啟用。
     </footer>
   </main>
 
+  <dialog class="site-dialog" id="authDialog" aria-labelledby="authTitle">
+    <div class="dialog-head">
+      <h2 id="authTitle">會員登入</h2>
+      <form method="dialog"><button class="btn btn-light">關閉</button></form>
+    </div>
+    <form class="dialog-form" id="authForm">
+      <label>電子郵件 <input name="email" type="email" autocomplete="email" required></label>
+      <label>密碼 <input name="password" type="password" autocomplete="current-password" required></label>
+      <div class="dialog-actions">
+        <button class="btn btn-primary" id="authSubmit">登入</button>
+        <button class="btn btn-light" type="button" id="authSwitch">建立帳號</button>
+      </div>
+    </form>
+    <div id="accountActions" hidden>
+      <button class="btn btn-light" id="signOutBtn">登出</button>
+    </div>
+    <p class="dialog-message" id="authMessage" role="status"></p>
+  </dialog>
+
+  <dialog class="site-dialog" id="writeDialog" aria-labelledby="writeTitle">
+    <div class="dialog-head">
+      <h2 id="writeTitle">發表文章</h2>
+      <form method="dialog"><button class="btn btn-light">關閉</button></form>
+    </div>
+    <form class="dialog-form" id="writeForm">
+      <label>標題 <input name="title" required></label>
+      <label>內文 <textarea name="body" rows="8" required></textarea></label>
+      <p class="dialog-message" id="writeMessage" role="status"></p>
+      <div class="dialog-actions"><button class="btn btn-primary" id="publishBtn">發表</button></div>
+    </form>
+  </dialog>
+
   <script>
-    const posts = [...document.querySelectorAll(".post")];
+    const postList = document.getElementById("postList");
     const searchInput = document.getElementById("searchInput");
     const emptyState = document.getElementById("emptyState");
     const postCount = document.getElementById("postCount");
@@ -538,7 +601,7 @@
     function filterPosts() {
       const keyword = searchInput.value.trim().toLowerCase();
       let shown = 0;
-      posts.forEach(post => {
+      postList.querySelectorAll(".post").forEach(post => {
         const matchesCategory = selectedCategory === "全部" || post.dataset.category === selectedCategory;
         const matchesKeyword = (post.dataset.title + " " + post.innerText).toLowerCase().includes(keyword);
         const visible = matchesCategory && matchesKeyword;
@@ -591,12 +654,6 @@
       button.addEventListener("click", () => alert("留言功能尚未啟用，後續會接上會員與資料庫。"));
     });
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      alert("登入／註冊功能尚未啟用，下一階段會串接 Supabase。");
-    });
-    document.getElementById("writeBtn").addEventListener("click", () => {
-      alert("發文功能尚未啟用，完成會員登入與資料庫串接後開放。");
-    });
     document.getElementById("noticeBtn").addEventListener("click", () => {
       alert("通知功能尚未啟用。");
     });
@@ -611,12 +668,212 @@
   const SUPABASE_URL = 'https://qnlqnocmjfhjhsryzviw.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w-WB-MFrnBY5il0LsxlSgg_6XPRHBtJ';
 
-  const supabaseClient = window.supabase.createClient(
+  const supabaseClient = window.supabase?.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
   );
 
-  console.log('Supabase 連線程式已載入');
+  const loginBtn = document.getElementById('loginBtn');
+  const authDialog = document.getElementById('authDialog');
+  const authForm = document.getElementById('authForm');
+  const authMessage = document.getElementById('authMessage');
+  const authSubmit = document.getElementById('authSubmit');
+  const authSwitch = document.getElementById('authSwitch');
+  const authTitle = document.getElementById('authTitle');
+  const passwordField = authForm.elements.password;
+  const accountActions = document.getElementById('accountActions');
+  const signOutBtn = document.getElementById('signOutBtn');
+  const writeDialog = document.getElementById('writeDialog');
+  const writeForm = document.getElementById('writeForm');
+  const writeMessage = document.getElementById('writeMessage');
+  const publishBtn = document.getElementById('publishBtn');
+  const feedMessage = document.getElementById('feedMessage');
+  let currentUser = null;
+  let registering = false;
+  let writeAfterLogin = false;
+  let postLoadVersion = 0;
+
+  function updateAuthDialog() {
+    loginBtn.textContent = currentUser ? '會員帳號' : '登入／註冊';
+    authForm.hidden = Boolean(currentUser);
+    accountActions.hidden = !currentUser;
+    authTitle.textContent = currentUser ? '會員帳號' : registering ? '建立帳號' : '會員登入';
+    authSubmit.textContent = registering ? '註冊' : '登入';
+    authSwitch.textContent = registering ? '返回登入' : '建立帳號';
+    passwordField.autocomplete = registering ? 'new-password' : 'current-password';
+  }
+
+  function showAuth(message = '') {
+    registering = false;
+    updateAuthDialog();
+    authMessage.textContent = supabaseClient ? message : '會員服務載入失敗，請重新整理頁面。';
+    if (!authDialog.open) authDialog.showModal();
+  }
+
+  loginBtn.addEventListener('click', () => {
+    writeAfterLogin = false;
+    showAuth();
+  });
+  authSwitch.addEventListener('click', () => {
+    registering = !registering;
+    passwordField.value = '';
+    authMessage.textContent = '';
+    updateAuthDialog();
+  });
+  authDialog.addEventListener('close', () => {
+    passwordField.value = '';
+  });
+  supabaseClient?.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user ?? null;
+    updateAuthDialog();
+  });
+
+  authForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!supabaseClient || authSubmit.disabled) return;
+    const email = authForm.elements.email.value.trim();
+    const password = passwordField.value;
+    const isSignUp = registering;
+    authSubmit.disabled = true;
+    authSwitch.disabled = true;
+    authMessage.textContent = '處理中…';
+    try {
+      const { data, error } = isSignUp
+        ? await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { emailRedirectTo: new URL(location.pathname, location.origin).href }
+          })
+        : await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        const messages = {
+          invalid_credentials: '電子郵件或密碼有誤。',
+          email_not_confirmed: '請先開啟驗證信完成驗證，再登入。',
+          weak_password: '請使用更長或更強的密碼。',
+          over_email_send_rate_limit: '驗證信寄送太頻繁，請稍後再試。'
+        };
+        authMessage.textContent = messages[error.code] || '無法完成操作，請確認資料或稍後再試。';
+        return;
+      }
+      if (data.session) {
+        const openWriter = writeAfterLogin && authDialog.open;
+        writeAfterLogin = false;
+        authDialog.close();
+        if (openWriter) showWriter();
+      } else {
+        registering = false;
+        passwordField.value = '';
+        updateAuthDialog();
+        authMessage.textContent = '請查收驗證信，完成電子郵件驗證後即可登入。';
+      }
+    } catch {
+      authMessage.textContent = '連線失敗，請稍後再試。';
+    } finally {
+      authSubmit.disabled = false;
+      authSwitch.disabled = false;
+    }
+  });
+
+  signOutBtn.addEventListener('click', async () => {
+    signOutBtn.disabled = true;
+    try {
+      const { error } = await supabaseClient.auth.signOut({ scope: 'local' });
+      if (error) throw error;
+      authDialog.close();
+    } catch {
+      authMessage.textContent = '登出失敗，請稍後再試。';
+    } finally {
+      signOutBtn.disabled = false;
+    }
+  });
+
+  function showWriter() {
+    writeMessage.textContent = '';
+    writeDialog.showModal();
+  }
+
+  for (const id of ['writeBtn', 'mobileWriteBtn']) {
+    document.getElementById(id).addEventListener('click', () => {
+      if (currentUser) {
+        showWriter();
+      } else {
+        writeAfterLogin = true;
+        showAuth('請先登入，再發表文章。');
+      }
+    });
+  }
+
+  async function loadMemberPosts() {
+    const version = ++postLoadVersion;
+    const { data, error } = await supabaseClient.from('posts')
+      .select('id,title,body,created_at')
+      .order('created_at', { ascending: false });
+    if (version !== postLoadVersion) return;
+    if (error) throw error;
+    const articles = document.createDocumentFragment();
+    for (const post of data) {
+      const article = document.createElement('article');
+      article.className = 'post member-post';
+      article.dataset.category = '未分類';
+      article.dataset.title = post.title;
+      const meta = document.createElement('div');
+      meta.className = 'post-meta meta-sub';
+      meta.textContent = '會員文章・' + new Date(post.created_at).toLocaleDateString('zh-TW');
+      const title = document.createElement('h2');
+      title.textContent = post.title;
+      const body = document.createElement('p');
+      body.textContent = post.body;
+      article.append(meta, title, body);
+      articles.append(article);
+    }
+    postList.querySelectorAll('.member-post').forEach(article => article.remove());
+    postList.prepend(articles);
+    filterPosts();
+  }
+
+  writeForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (publishBtn.disabled) return;
+    const userId = currentUser?.id;
+    const title = writeForm.elements.title.value.trim();
+    const body = writeForm.elements.body.value.trim();
+    if (!userId || !title || !body) {
+      writeMessage.textContent = userId ? '請填寫標題和內文。' : '登入已失效，請重新登入。';
+      return;
+    }
+    publishBtn.disabled = true;
+    writeMessage.textContent = '發表中…';
+    try {
+      const { error } = await supabaseClient.from('posts').insert({ user_id: userId, title, body });
+      if (error) {
+        writeMessage.textContent = error.code === '42501'
+          ? '目前帳號沒有發文權限。'
+          : '發表失敗，請稍後再試。';
+        return;
+      }
+    } catch {
+      writeMessage.textContent = '無法確認是否已發表，請先重新整理文章列表。';
+      return;
+    } finally {
+      publishBtn.disabled = false;
+    }
+    writeForm.reset();
+    writeDialog.close();
+    searchInput.value = '';
+    document.querySelector('.board[data-category="全部"]').click();
+    try {
+      await loadMemberPosts();
+      feedMessage.textContent = '文章已發表。';
+    } catch {
+      feedMessage.textContent = '文章已發表，請重新整理以載入文章。';
+    }
+  });
+
+  if (supabaseClient) {
+    loadMemberPosts().catch(() => {
+      feedMessage.textContent = '會員文章暫時無法載入，請稍後重新整理。';
+    });
+  }
 </script>
 
 </body>
