@@ -13,7 +13,7 @@
       --ink: #242936;
       --muted: #7b8495;
       --line: #e9ecf1;
-      --bg: #f5f6f8;
+      --bg: #ebf1fa;
       --white: #fff;
     }
     * { box-sizing: border-box; }
@@ -275,7 +275,7 @@
       max-height: calc(100dvh - 94px);
       overflow: auto;
       padding: 17px 14px 16px;
-      background: #ebf1fa;
+      background: transparent;
       border-radius: 18px;
       color: #142840;
     }
@@ -297,7 +297,7 @@
       align-items: center;
       gap: 13px;
       width: 100%;
-      min-height: 49px;
+      min-height: 46px;
       padding: 9px 13px;
       border: 0;
       border-radius: 13px;
@@ -334,12 +334,27 @@
       margin-top: 15px;
       width: 100%;
       border-radius: 99px;
-      background: #216bc8;
+      background: #2b82e8;
       color: #fff;
       font-size: 16px;
     }
     .sidebar-write:hover { background: #175cb6; }
-    .sidebar .boards-panel { margin: 8px 0 4px; }
+    .nav-page h1 { margin: 3px 0 17px; font-size: 25px; color: #142840; }
+    .nav-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+    .nav-card h2 { margin: 0 0 12px; font-size: 17px; }
+    .nav-card p { margin: 7px 0; }
+    .nav-card > .btn { margin: 3px 6px 3px 0; }
+    .nav-details summary { cursor: pointer; font-size: 16px; font-weight: 750; }
+    .nav-details[open] summary { margin-bottom: 12px; }
+    .nav-chip-list, .nav-history-row, .nav-search { display: flex; align-items: center; gap: 8px; }
+    .nav-chip-list { flex-wrap: wrap; }
+    .nav-history-row { justify-content: space-between; margin-bottom: 6px; }
+    .nav-search .search { max-width: none; min-width: 0; }
+    .nav-ranked { padding-left: 22px; }
+    .nav-ranked li { margin-bottom: 5px; }
+    .nav-ranked .btn { text-align: left; margin-right: 8px; }
+    .nav-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px; }
+    #homeView, #navPage, .member-post { scroll-margin-top: 130px; }
     .center-col { scroll-margin-top: 125px; }
     @media (max-width: 1000px) {
       .layout { grid-template-columns: 220px minmax(0,1fr); }
@@ -363,7 +378,7 @@
       .sidebar-item small { margin-left: 0; }
       .sidebar-badge { left: calc(50% + 3px); }
       .sidebar-write { margin-top: 9px; }
-      .sidebar .boards-panel { margin: 8px 0 0; }
+
       .page { margin: 14px auto; padding: 0 12px; }
       .hero { padding: 21px 18px; }
       .hero h1 { font-size: 22px; }
@@ -405,23 +420,19 @@
         </a>
         <nav class="sidebar-nav" aria-label="論壇導覽">
           <button type="button" class="sidebar-item" id="homeNav" aria-current="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>首頁</span></button>
-          <button type="button" class="sidebar-item" id="boardsNav" aria-controls="boards" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>看板</span></button>
-          <button type="button" class="sidebar-item" id="cardsNav" disabled><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="4" width="9" height="15" rx="1.5"/><rect x="4" y="6" width="9" height="15" rx="1.5" transform="rotate(-12 8.5 13.5)"/></svg><span>抽卡</span> <small>尚未開放</small></button>
+          <button type="button" class="sidebar-item" id="boardsNav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>看板</span></button>
+          <button type="button" class="sidebar-item" id="cardsNav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="4" width="9" height="15" rx="1.5"/><rect x="4" y="6" width="9" height="15" rx="1.5" transform="rotate(-12 8.5 13.5)"/></svg><span>抽卡</span></button>
           <button type="button" class="sidebar-item" id="searchNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>搜尋</span></button>
           <button type="button" class="sidebar-item" id="profileNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>個人</span></button>
           <button type="button" class="sidebar-item" id="noticeBtn" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10m-8 13a2 2 0 0 0 4 0"/></svg><span>通知</span><span class="sidebar-badge" id="noticeBadge" hidden></span></button>
-          <button type="button" class="sidebar-item" id="messagesNav" disabled><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a9 9 0 0 1-9 9 9.4 9.4 0 0 1-4-.9L3 21l1.4-4.5a9 9 0 1 1 16.6-5z"/></svg><span>私訊</span> <small>尚未開放</small></button>
+          <button type="button" class="sidebar-item" id="messagesNav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a9 9 0 0 1-9 9 9.4 9.4 0 0 1-4-.9L3 21l1.4-4.5a9 9 0 1 1 16.6-5z"/></svg><span>私訊</span></button>
         </nav>
-        <section class="panel boards-panel" id="boards" hidden>
-          <div class="panel-title">探索看板</div>
-          <div class="board-list" id="boardList">
-            <a href="#" class="board active" data-category="全部"><span class="board-icon">全</span><span class="board-name">全部看板</span></a>
-          </div>
-        </section>
         <button type="button" class="btn sidebar-write" id="writeBtn">＋ 發文</button>
       </aside>
 
       <section class="center-col">
+        <section class="nav-page" id="navPage" hidden></section>
+        <div id="homeView">
         <section class="hero">
           <div>
             <h1>牙科人的第二個休息室。</h1>
@@ -442,6 +453,7 @@
           <p id="feedMessage" class="dialog-message" role="status"></p>
           <div id="postList"></div>
           <div class="empty" id="emptyState">沒有找到符合的文章，試試其他關鍵字。</div>
+        </div>
         </div>
       </section>
 
@@ -544,69 +556,34 @@
       postCount.textContent = shown + " 篇文章";
     }
 
-    const homeNav = document.getElementById('homeNav');
-    const boardsNav = document.getElementById('boardsNav');
-    const searchNav = document.getElementById('searchNav');
-    const boardsPanel = document.getElementById('boards');
+    const navPage = document.getElementById('navPage');
+    const homeView = document.getElementById('homeView');
+    let activeNav = 'homeNav';
 
-    function highlightNavigation(active) {
-      for (const item of [homeNav, boardsNav, searchNav]) {
-        if (item === active) item.setAttribute('aria-current', 'true');
+    function highlightNavigation(activeId) {
+      document.querySelectorAll('.sidebar-item').forEach(item => {
+        if (item.id === activeId) item.setAttribute('aria-current', 'true');
         else item.removeAttribute('aria-current');
-      }
-    }
-
-    function toggleBoards(open) {
-      boardsPanel.hidden = !open;
-      boardsNav.setAttribute('aria-expanded', String(open));
+      });
     }
 
     function goHome(event) {
       event.preventDefault();
-      searchInput.value = '';
-      selectedCategory = '全部';
-      selectedFeed = '推薦';
-      boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item.dataset.category === '全部'));
-      document.querySelector('.feed-tab[data-feed="推薦"]').click();
-      toggleBoards(false);
-      highlightNavigation(homeNav);
+      showFeed();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    homeNav.addEventListener('click', goHome);
+    document.getElementById('homeNav').addEventListener('click', goHome);
     document.getElementById('sidebarBrand').addEventListener('click', goHome);
     document.querySelector('.topbar .brand').addEventListener('click', goHome);
-    boardsNav.addEventListener('click', () => {
-      toggleBoards(boardsPanel.hidden);
-      highlightNavigation(boardsPanel.hidden && selectedCategory === '全部' ? homeNav : boardsNav);
-      if (!boardsPanel.hidden) boardsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    });
-    searchNav.addEventListener('click', () => {
-      selectedCategory = '全部';
-      boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item.dataset.category === '全部'));
-      document.querySelector('.feed-tab[data-feed="全部"]').click();
-      toggleBoards(false);
-      highlightNavigation(searchNav);
-      searchInput.focus();
-    });
-    searchInput.addEventListener('focus', () => highlightNavigation(searchNav));
     searchInput.addEventListener('input', filterPosts);
-
-    const boardList = document.getElementById('boardList');
-    boardList.addEventListener('click', event => {
-      const board = event.target.closest('.board');
-      if (!board) return;
+    searchInput.addEventListener('keydown', event => {
+      if (event.key !== 'Enter') return;
       event.preventDefault();
-      selectedCategory = board.dataset.category;
-      if (!boardsPanel.hidden) highlightNavigation(boardsNav);
-      boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item === board));
-      updateFeedTitle();
-      filterPosts();
-      if (window.innerWidth <= 650) {
-        document.querySelector('.center-col').scrollIntoView({ behavior: 'smooth' });
-      }
+      const value = searchInput.value.trim();
+      if (value) remember('forum-recent-searches', value);
+      openSearchPage(value);
     });
-
   </script>
   
 <!-- Supabase 連線設定 -->
@@ -656,8 +633,6 @@
     authMessage.textContent = supabaseClient ? message : '會員服務載入失敗，請重新整理頁面。';
     if (!authDialog.open) authDialog.showModal();
   }
-
-  document.getElementById('profileNav').addEventListener('click', () => loginBtn.click());
 
   loginBtn.addEventListener('click', () => {
     writeAfterLogin = false;
@@ -742,7 +717,7 @@
 
   const labels = ['訪客／待驗證', '一般會員', '進階會員', '版主', '管理員'];
   const restrictedBoards = new Set(['徵人／徵工作', '團購', '二手／買賣']);
-  const allBoardsLink = boardList.querySelector('.board');
+  let feedPosts = [];
   let boards = [];
   const boardLabels = new Map();
   let initialBoardLoad;
@@ -764,16 +739,6 @@
     data.forEach(row => boardLabels.set(row.board_key, row.label));
     boards = data.filter(row => !row.archived).map(row => row.board_key);
     if (!boards.includes(selectedCategory)) selectedCategory = '全部';
-    allBoardsLink.classList.toggle('active', selectedCategory === '全部');
-    const links = boards.map(key => {
-      const label = boardLabel(key);
-      const link = element('a', '', key === selectedCategory ? 'board active' : 'board');
-      link.href = '#';
-      link.dataset.category = key;
-      link.append(element('span', [...label][0], 'board-icon'), element('span', label, 'board-name'));
-      return link;
-    });
-    boardList.replaceChildren(allBoardsLink, ...links);
     updateFeedTitle();
   }
   const forumDialog = document.getElementById('forumDialog');
@@ -818,7 +783,8 @@
       try {
         await handler();
       } catch (error) {
-        const target = forumDialog.open ? forumMessage : feedMessage;
+        const target = forumDialog.open ? forumMessage : navPage.hidden ? feedMessage
+          : navPage.querySelector('[role="status"]');
         target.textContent = error.code === '42501' ? '目前帳號沒有這項權限。' : '操作失敗，請稍後再試。';
       } finally {
         button.disabled = false;
@@ -873,6 +839,8 @@
           refreshNoticeBadge();
         }
         await loadMemberPosts();
+        if (activeNav === 'profileNav') openProfilePage();
+        if (activeNav === 'noticeBtn') openNotificationsPage();
       } catch {
         if (currentUser?.id === userId) feedMessage.textContent = '會員或文章資料暫時無法載入，請重新整理。';
       }
@@ -941,6 +909,7 @@
   function renderPost(post) {
     const article = element('article', '', 'post member-post');
     article.id = 'post-' + post.id;
+    article.tabIndex = -1;
     article.dataset.category = post.board;
     article.dataset.title = post.title;
     article.dataset.followed = String(memberActions.has(post.id + ':follow'));
@@ -981,14 +950,15 @@
 
   async function loadMemberPosts() {
     const version = ++postLoadVersion;
-    const reads = [supabaseClient.from('posts').select('id,user_id,title,body,board,created_at')
+    const reads = [supabaseClient.from('posts').select('id,user_id,title,body,board,created_at,comments(count)')
       .is('hidden_at', null).order('created_at', { ascending: false }).order('id', { ascending: false })];
     if (accessLevel >= 1) reads.push(supabaseClient.from('forum_post_actions').select('post_id,kind'));
     const [posts, actions] = await Promise.all(reads);
     if (version !== postLoadVersion) return;
     if (posts.error || actions?.error) throw posts.error || actions.error;
     memberActions = new Set(actions?.data.map(item => item.post_id + ':' + item.kind));
-    postList.replaceChildren(...posts.data.map(renderPost));
+    feedPosts = posts.data;
+    postList.replaceChildren(...feedPosts.map(renderPost));
     filterPosts();
   }
 
@@ -1021,9 +991,7 @@
       publishBtn.disabled = false;
     }
     writeDialog.close();
-    searchInput.value = '';
-    document.querySelector('.feed-tab[data-feed="全部"]').click();
-    document.querySelector('.board[data-category="全部"]').click();
+    showFeed();
     feedMessage.textContent = post ? '文章已更新。' : '文章已發表。';
     try { await loadMemberPosts(); }
     catch { feedMessage.textContent += ' 請重新整理以載入文章。'; }
@@ -1260,30 +1228,305 @@
     }
   }
 
-  document.getElementById('noticeBtn').addEventListener('click', async () => {
-    if (!requireMember()) return;
+  function card(title) {
+    const section = element('section', '', 'nav-card');
+    if (title) section.append(element('h2', title));
+    return section;
+  }
+
+  function openNavPage(id, title) {
+    activeNav = id;
+    homeView.hidden = true;
+    navPage.hidden = false;
+    const status = element('p', '', 'dialog-message');
+    status.setAttribute('role', 'status');
+    navPage.replaceChildren(element('h1', title), status);
+    highlightNavigation(id);
+    if (window.innerWidth <= 650) navPage.scrollIntoView({ block: 'start' });
+    else window.scrollTo({ top: 0 });
+    return navPage;
+  }
+
+  function showFeed(board = '全部', nav = 'homeNav') {
+    activeNav = nav;
+    navPage.hidden = true;
+    homeView.hidden = false;
+    highlightNavigation(nav);
+    selectedCategory = board;
+    searchInput.value = '';
+    document.querySelector('.feed-tab[data-feed="推薦"]').click();
+    if (window.innerWidth <= 650) homeView.scrollIntoView({ block: 'start' });
+  }
+
+  function historyValues(key) {
+    try {
+      const data = JSON.parse(localStorage.getItem(key));
+      return Array.isArray(data) ? data.filter(value => typeof value === 'string').slice(0, 6) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory(key, values) {
+    try { localStorage.setItem(key, JSON.stringify(values.slice(0, 6))); }
+    catch { /* Browsing works when browser storage is unavailable. */ }
+  }
+
+  function remember(key, value) {
+    saveHistory(key, [value, ...historyValues(key).filter(item => item !== value)]);
+  }
+
+  function openBoard(key) {
+    remember('forum-recent-boards', key);
+    showFeed(key, 'boardsNav');
+  }
+
+  function boardOptions(keys) {
+    const list = element('div', '', 'nav-chip-list');
+    for (const key of keys) list.append(action(boardLabel(key), () => openBoard(key)));
+    if (!keys.length) list.append(element('p', '目前沒有看板。', 'small-note'));
+    return list;
+  }
+
+  function expandable(title, content, expanded = false) {
+    const panel = element('details', '', 'nav-card nav-details');
+    panel.open = expanded;
+    panel.append(element('summary', title), content);
+    return panel;
+  }
+
+  function openPost(post) {
+    showFeed();
+    const article = document.getElementById('post-' + post.id);
+    article?.scrollIntoView({ block: 'start' });
+    article?.focus({ preventScroll: true });
+  }
+
+  function openBoardsPage() {
+    const page = openNavPage('boardsNav', '看板');
+    const recent = card('最近造訪');
+    const history = historyValues('forum-recent-boards').filter(key => boards.includes(key));
+    recent.append(history.length ? boardOptions(history) : element('p', '瀏覽過的看板會顯示在這裡。', 'small-note'));
+    const cutoff = Date.now() - 7 * 86400000;
+    const activity = new Map();
+    const now = new Date();
+    const monthly = [];
+    for (const post of feedPosts) {
+      const date = new Date(post.created_at);
+      if (date.getTime() >= cutoff && boards.includes(post.board)) activity.set(post.board, (activity.get(post.board) ?? 0) + 1);
+      if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && post.comments?.[0]?.count > 0) monthly.push(post);
+    }
+    const hot = [...activity].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([key]) => key);
+    const top = element('ol', '', 'nav-ranked');
+    for (const post of monthly.sort((a, b) => b.comments[0].count - a.comments[0].count).slice(0, 10)) {
+      const item = element('li', '');
+      item.append(action(post.title, () => openPost(post)), element('span', post.comments[0].count + ' 則留言', 'small-note'));
+      top.append(item);
+    }
+    page.append(
+      expandable('所有看板', boardOptions(boards), true),
+      expandable('即時熱門看板', hot.length ? boardOptions(hot) : element('p', '近七天尚無看板發文。', 'small-note')),
+      expandable('活動轉運站', boardOptions(boards.filter(key => ['課程／進修', '學生事務交流', '交友'].includes(key)))),
+      expandable('活躍排行榜', element('p', '會員活躍排行尚未開放。', 'small-note')),
+      expandable('本月熱門文章 TOP 10', top.children.length ? top : element('p', '本月尚無文章留言可供排行。', 'small-note')),
+      recent
+    );
+  }
+
+  function openSearchPage(query = '', focus = true) {
+    const page = openNavPage('searchNav', '搜尋');
+    const form = element('form', '', 'nav-card nav-search');
+    const input = element('input', '', 'search');
+    input.type = 'search';
+    input.placeholder = '搜尋文章、看板或關鍵字';
+    input.setAttribute('aria-label', '搜尋文章或看板');
+    input.value = query;
+    const submit = element('button', '搜尋', 'btn btn-primary');
+    submit.type = 'submit';
+    form.append(input, submit);
+    const content = element('div', '');
+    page.append(form, content);
+
+    function render(query) {
+      const value = query.trim();
+      content.replaceChildren();
+      if (value) {
+        const term = value.toLowerCase();
+        const matchedBoards = boards.filter(key => boardLabel(key).toLowerCase().includes(term));
+        const matchedPosts = feedPosts.filter(post => [post.title, post.body, boardLabel(post.board)].join(' ').toLowerCase().includes(term));
+        if (matchedBoards.length) {
+          const matches = card('符合的看板');
+          matches.append(boardOptions(matchedBoards));
+          content.append(matches);
+        }
+        const matches = card('搜尋結果');
+        if (matchedPosts.length) matches.append(...matchedPosts.map(post => action(post.title, () => openPost(post))));
+        else matches.append(element('p', '沒有找到符合的文章。', 'small-note'));
+        content.append(matches);
+        return;
+      }
+      const suggestions = card('搜尋建議');
+      const chips = element('div', '', 'nav-chip-list');
+      for (const key of boards.slice(0, 8)) chips.append(action(boardLabel(key), () => search(boardLabel(key))));
+      suggestions.append(chips);
+      const recent = card('最近搜尋紀錄');
+      const terms = historyValues('forum-recent-searches');
+      for (const term of terms) {
+        const row = element('div', '', 'nav-history-row');
+        const remove = action('移除', () => {
+          saveHistory('forum-recent-searches', terms.filter(item => item !== term));
+          render('');
+        });
+        remove.setAttribute('aria-label', '移除搜尋紀錄 ' + term);
+        row.append(action(term, () => search(term)), remove);
+        recent.append(row);
+      }
+      if (!terms.length) recent.append(element('p', '目前沒有搜尋紀錄。', 'small-note'));
+      content.append(suggestions, recent);
+    }
+
+    function search(value) {
+      const term = value.trim();
+      if (term) remember('forum-recent-searches', term);
+      input.value = term;
+      render(term);
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); search(input.value); });
+    input.addEventListener('input', () => render(input.value));
+    render(query);
+    initialBoardLoad?.then(() => {
+      if (input.isConnected) render(input.value);
+    });
+    if (focus) input.focus({ preventScroll: true });
+  }
+
+  function memberPrompt(section, message) {
+    section.append(element('p', message, 'small-note'), action('登入／註冊', () => loginBtn.click()));
+  }
+
+  async function openProfilePage() {
+    const page = openNavPage('profileNav', '個人');
+    const profile = card();
+    page.append(profile);
+    if (!currentUser) {
+      memberPrompt(profile, '登入後查看個人資料、文章與會員權限。');
+      return;
+    }
+    const userId = currentUser.id;
+    const name = element('h2', '我的資料');
+    const description = element('p', labels[accessLevel], 'small-note');
+    const mine = feedPosts.filter(post => post.user_id === userId);
+    profile.append(name, description, element('p', mine.length + ' 篇文章'),
+      action('等級與解鎖', showPermissions), action('帳號與管理設定', () => loginBtn.click()));
+    const posts = card('我的文章');
+    if (mine.length) posts.append(...mine.map(post => action(post.title, () => openPost(post))));
+    else posts.append(element('p', '你還沒有發表文章。', 'small-note'));
+    page.append(posts);
+    try {
+      const { data, error } = await supabaseClient.from('profiles').select('display_name').eq('id', userId).maybeSingle();
+      if (error) throw error;
+      if (data?.display_name) name.textContent = data.display_name;
+      if (data && accessLevel >= 1 && currentUser?.id === userId) {
+        profile.append(action('編輯基本資料', () => editDisplayName(userId, name)));
+      }
+    } catch { /* The account and permission controls are still available. */ }
+  }
+
+  function editDisplayName(userId, name) {
+    showForum('編輯基本資料');
+    const form = element('form', '', 'dialog-form');
+    const label = element('label', '顯示名稱');
+    const input = element('input', '');
+    input.value = name.textContent;
+    input.required = true;
+    input.maxLength = 40;
+    label.append(input);
+    const save = element('button', '儲存', 'btn btn-primary');
+    form.append(label, save);
+    forumContent.append(form);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value || save.disabled || currentUser?.id !== userId) return;
+      save.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.from('profiles')
+          .update({ display_name: value }).eq('id', userId).select('display_name').maybeSingle();
+        if (error || !data) throw error ?? Error('Profile not found');
+        name.textContent = data.display_name;
+        forumMessage.textContent = '顯示名稱已儲存。';
+      } catch {
+        forumMessage.textContent = '無法儲存顯示名稱，請稍後再試。';
+      } finally {
+        save.disabled = false;
+      }
+    });
+  }
+
+  function openCardsPage() {
+    const page = openNavPage('cardsNav', '抽卡');
+    const status = card('抽卡尚未開放');
+    status.append(element('p', '午夜與中午抽卡、卡友邀請與配對將在功能啟用後提供。', 'small-note'));
+    const slots = element('div', '', 'nav-card-grid');
+    for (const title of ['午夜 00:00 的卡片', '中午 12:00 的卡片']) {
+      const slot = card(title);
+      slot.append(element('p', '尚未開放', 'small-note'));
+      slots.append(slot);
+    }
+    page.append(status, slots);
+  }
+
+  function openMessagesPage() {
+    const page = openNavPage('messagesNav', '私訊');
+    const inbox = card('私訊收件匣');
+    inbox.append(element('p', '私訊與私訊邀請尚未開放。', 'small-note'));
+    page.append(inbox);
+  }
+
+  document.getElementById('boardsNav').addEventListener('click', () => {
+    openBoardsPage();
+    initialBoardLoad?.then(() => {
+      if (activeNav === 'boardsNav' && !navPage.hidden) openBoardsPage();
+    });
+  });
+  document.getElementById('searchNav').addEventListener('click', () => openSearchPage());
+  document.getElementById('profileNav').addEventListener('click', openProfilePage);
+  document.getElementById('cardsNav').addEventListener('click', openCardsPage);
+  document.getElementById('messagesNav').addEventListener('click', openMessagesPage);
+
+  async function openNotificationsPage() {
+    const page = openNavPage('noticeBtn', '通知');
+    const inbox = card('我的通知');
+    page.append(inbox);
+    if (accessLevel < 1) {
+      if (!currentUser) memberPrompt(inbox, '登入後查看回覆與追蹤文章的通知。');
+      else inbox.append(element('p', '完成 Email 驗證後即可接收通知。', 'small-note'));
+      return;
+    }
     refreshNoticeBadge();
-    showForum('我的通知');
     const { data, error } = await supabaseClient.from('forum_notifications')
       .select('id,post_id,created_at,is_read,posts(title)').order('created_at', { ascending: false }).limit(50);
-    if (error) { forumMessage.textContent = '通知暫時無法載入。'; return; }
-    if (!data.length) forumContent.append(element('p', '目前沒有通知。'));
+    if (error) { inbox.append(element('p', '通知暫時無法載入。', 'small-note')); return; }
+    if (!data.length) inbox.append(element('p', '目前沒有通知。'));
     for (const notice of data) {
       const button = action((notice.is_read ? '' : '未讀｜') + (notice.posts?.title ?? '文章') + ' 有新留言', async () => {
         const { error } = await supabaseClient.from('forum_notifications').update({ is_read: true }).eq('id', notice.id);
         if (error) throw error;
+        button.textContent = button.textContent.replace(/^未讀｜/, '');
         refreshNoticeBadge();
         const { data: post, error: postError } = await supabaseClient.from('posts')
           .select('id,title,body,board,created_at,user_id').eq('id', notice.post_id).maybeSingle();
         if (postError) throw postError;
         if (post) await showComments(post);
-        else forumMessage.textContent = '這篇文章目前無法查看。';
+        else row.append(element('span', '這篇文章目前無法查看。', 'small-note'));
       });
       const row = element('p', '');
       row.append(button);
-      forumContent.append(row);
+      inbox.append(row);
     }
-  });
+  }
+  document.getElementById('noticeBtn').addEventListener('click', openNotificationsPage);
 
   if (supabaseClient) {
     initialBoardLoad = loadBoardLabels().then(() => {
