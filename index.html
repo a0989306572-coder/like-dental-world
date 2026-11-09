@@ -263,6 +263,8 @@
     }
     .dialog-form textarea { resize: vertical; }
     .dialog-message { margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+    .forum-comment { white-space: pre-wrap; overflow-wrap: anywhere; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+    .post-actions [aria-pressed="true"] { color: var(--blue); font-weight: 700; }
     .dialog-message:empty { display: none; }
     .member-post p { white-space: pre-wrap; overflow-wrap: anywhere; }
     .member-post h2 { overflow-wrap: anywhere; }
@@ -310,7 +312,7 @@
       <input class="search" id="searchInput" placeholder="⌕ 搜尋看板、文章、牙科職涯……" aria-label="搜尋文章">
       <div class="nav-actions">
         <a class="nav-link" href="#boards">看板</a>
-        <button class="btn btn-light" id="noticeBtn">通知 <span>2</span></button>
+        <button class="btn btn-light" id="noticeBtn">通知</button>
         <button class="btn btn-primary" id="loginBtn">登入／註冊</button>
       </div>
     </nav>
@@ -339,7 +341,7 @@
           <div class="section-label">熱門分類</div>
           <div class="board-list">
             <a href="#" class="board active" data-category="全部"><span class="board-icon">推</span><span class="board-name">推薦文章</span></a>
-            <a href="#" class="board" data-category="八卦閒聊"><span class="board-icon">卦</span><span class="board-name">八卦閒聊</span><span class="board-count">42</span></a>
+            <a href="#" class="board" data-category="八卦閒聊"><span class="board-icon">卦</span><span class="board-name">八卦閒聊</span></a>
             <a href="#" class="board" data-category="健保申報／職涯"><span class="board-icon">保</span><span class="board-name">健保申報／職涯</span></a>
             <a href="#" class="board" data-category="課程／進修"><span class="board-icon">課</span><span class="board-name">課程／進修</span></a>
             <a href="#" class="board" data-category="開業"><span class="board-icon">業</span><span class="board-name">開業</span></a>
@@ -363,7 +365,7 @@
       <section class="center-col">
         <div class="panel">
           <div class="feed-tabs">
-            <button class="feed-tab active" data-feed="推薦">推薦</button>
+            <button class="feed-tab active" data-feed="推薦">最新</button>
             <button class="feed-tab" data-feed="全部">全部</button>
             <button class="feed-tab" data-feed="追蹤">追蹤</button>
           </div>
@@ -373,168 +375,18 @@
             <span id="postCount">熱門討論</span>
           </div>
           <p id="feedMessage" class="dialog-message" role="status"></p>
-          <div id="postList">
-            <article class="post" data-category="八卦閒聊" data-title="老闆說大家都是一家人接著就宣布調降拆帳">
-              <div class="post-meta">
-                <div class="avatar">匿</div>
-                <div><div class="author">牙醫師・匿名 <span class="level">Lv14</span></div><div class="meta-sub">八卦閒聊・42 分鐘前</div></div>
-                <span class="tag">熱門</span>
-              </div>
-              <h2>老闆說「大家都是一家人」，接著就宣布調降拆帳</h2>
-              <p>診所開會第一句就是我們是一家人，接著宣布拆帳從 40% 降到 35%，理由是耗材漲價。想問大家現在北部一般科拆帳多少？是不是該找下一間了。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>300</span></button><button class="comment-btn">💬 364</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="健保申報／職涯" data-title="健保91碼複雜性根管核刪申復成功經驗分享">
-              <div class="post-meta">
-                <div class="avatar">冠</div>
-                <div><div class="author">冠宇 <span class="verified">✔</span>・牙醫師 <span class="level">Lv9</span></div><div class="meta-sub">健保申報／職涯・3 小時前</div></div>
-              </div>
-              <h2>健保 91 碼複雜性根管核刪，申復成功經驗分享</h2>
-              <p>這季被核刪了三件複雜性根管，主因是術前 X 光看不出根管鈣化。申復時補了 CBCT 截圖與根管長度量測紀錄，三件全數補回。整理一下申復書怎麼寫比較容易過：影像、治療紀錄與審查條文都要對應。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>261</span></button><button class="comment-btn">💬 221</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="八卦閒聊" data-title="牙助是不是到哪間都被當萬能小幫手">
-              <div class="post-meta">
-                <div class="avatar">匿</div>
-                <div><div class="author">牙助・匿名 <span class="level">Lv3</span></div><div class="meta-sub">八卦閒聊・2 小時前</div></div>
-                <span class="tag">討論中</span>
-              </div>
-              <h2>牙助是不是到哪間都被當萬能小幫手</h2>
-              <p>跟診、櫃台、消毒、打掃、經營 IG 全都是我，薪水還是基本工資多一點。想知道大家的待遇。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>218</span></button><button class="comment-btn">💬 22</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="課程／進修" data-title="隱形矯正進階課心得附著體設計是成敗關鍵">
-              <div class="post-meta">
-                <div class="avatar">思</div>
-                <div><div class="author">思妤醫師 <span class="verified">✔</span>・牙醫師 <span class="level">Lv11</span></div><div class="meta-sub">課程／進修・1 天前</div></div>
-              </div>
-              <h2>隱形矯正進階課心得：附著體設計是成敗關鍵</h2>
-              <p>兩天課程，實作佔一半。最大收穫是附著體位置與牙齒移動的對應，還有如何判斷什麼時候該加 IPR。學分 12 點，推薦給剛開始做隱形矯正的醫師。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>164</span></button><button class="comment-btn">💬 96</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="開業" data-title="開業前一定要想清楚的7件事設備採購篇">
-              <div class="post-meta">
-                <div class="avatar">禾</div>
-                <div><div class="author">禾森齒材 <span class="verified">✔</span>・牙材廠商 <span class="level">Lv6</span></div><div class="meta-sub">開業・15 小時前</div></div>
-              </div>
-              <h2>開業前一定要想清楚的 7 件事：設備採購篇</h2>
-              <p>協助過不少診所開業，整理常見的設備決策：牙椅數量、CBCT 要不要第一年就買、口掃與技工所的相容性、消毒動線……以下逐項說明。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>122</span></button><button class="comment-btn">💬 180</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="交友" data-title="台北有沒有喜歡聽獨立樂團的牙科人">
-              <div class="post-meta">
-                <div class="avatar">于</div>
-                <div><div class="author">于庭 <span class="verified">✔</span>・牙醫師 <span class="level">Lv9</span></div><div class="meta-sub">交友・6 小時前</div></div>
-              </div>
-              <h2>台北有沒有喜歡聽獨立樂團的牙科人？</h2>
-              <p>下個月有幾場不錯的演出，想找人一起去。喜歡貓的加分。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>70</span></button><button class="comment-btn">💬 51</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="徵人／徵工作" data-title="高雄左營植牙診所誠徵全職牙醫師">
-              <div class="post-meta">
-                <div class="avatar">承</div>
-                <div><div class="author">承翰 <span class="verified">✔</span>・牙醫師 <span class="level">Lv14</span></div><div class="meta-sub">徵人／徵工作・5 小時前</div></div>
-                <span class="tag">徵人</span>
-              </div>
-              <h2>【徵人】高雄左營 植牙診所誠徵全職牙醫師 1 名</h2>
-              <p>位置近高鐵站，條件為保障底薪加拆帳，植牙病例多，可帶刀。設備包含 CBCT、口掃與顯微鏡，歡迎先來參觀。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>56</span></button><button class="comment-btn">💬 40</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="生活／吃喝玩樂" data-title="大安區下班後還開著的好吃宵夜整理">
-              <div class="post-meta">
-                <div class="avatar">雅</div>
-                <div><div class="author">雅婷 <span class="verified">✔</span>・牙助 <span class="level">Lv10</span></div><div class="meta-sub">生活／吃喝玩樂・18 小時前</div></div>
-              </div>
-              <h2>大安區下班後還開著的好吃宵夜整理</h2>
-              <p>晚診結束都九點半了，整理幾家我常去的宵夜店：鹹粥、滷味、豆花……</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>93</span></button><button class="comment-btn">💬 70</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="理財" data-title="牙醫的理財大家執業幾年存到第一桶金">
-              <div class="post-meta">
-                <div class="avatar">匿</div>
-                <div><div class="author">牙醫師・匿名 <span class="level">Lv14</span></div><div class="meta-sub">理財・2 天前</div></div>
-              </div>
-              <h2>牙醫的理財：大家執業幾年存到第一桶金？</h2>
-              <p>執業第五年，最近開始認真規劃。好奇大家是 ETF 為主還是會買房？有沒有人在做期貨或量化交易？</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>130</span></button><button class="comment-btn">💬 88</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="徵人／徵工作" data-title="跟診三年牙助想找台北週休二日的診所">
-              <div class="post-meta">
-                <div class="avatar">匿</div>
-                <div><div class="author">牙助・匿名 <span class="level">Lv10</span></div><div class="meta-sub">徵人／徵工作・8 小時前</div></div>
-                <span class="tag">徵工作</span>
-              </div>
-              <h2>【徵工作】跟診三年牙助，想找台北週休二日的診所</h2>
-              <p>熟悉植牙與矯正跟診、會操作口掃與 CBCT 拍攝。希望週休二日，晚診一週不超過兩天，大安區附近更好。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>33</span></button><button class="comment-btn">💬 11</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="學生事務交流" data-title="國考二階臨床科目學長姐推薦哪一版共筆">
-              <div class="post-meta">
-                <div class="avatar">育</div>
-                <div><div class="author">育誠 <span class="verified">✔</span>・牙醫學生 <span class="level">Lv2</span></div><div class="meta-sub">學生事務交流・11 小時前</div></div>
-              </div>
-              <h2>國考二階臨床科目，學長姐推薦哪一版共筆？</h2>
-              <p>明年要考二階，想請教各科目準備的順序，以及大家用哪一版共筆。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>27</span></button><button class="comment-btn">💬 13</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="團購" data-title="一次性吸唾管檢診手套10月團購">
-              <div class="post-meta">
-                <div class="avatar">禾</div>
-                <div><div class="author">禾森齒材 <span class="verified">✔</span>・牙材廠商 <span class="level">Lv6</span></div><div class="meta-sub">團購・1 天前</div></div>
-                <span class="tag">團購</span>
-              </div>
-              <h2>【團購】一次性吸唾管、檢診手套 10 月團購</h2>
-              <p>本月品項：吸唾管、檢診手套（S／M／L）、口罩。滿 20 箱免運，月底截止。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>42</span></button><button class="comment-btn">💬 33</button><span>↗ 分享</span></div>
-            </article>
-
-            <article class="post" data-category="二手／買賣" data-title="九成新口掃機因診所整併釋出">
-              <div class="post-meta">
-                <div class="avatar">家</div>
-                <div><div class="author">家豪 <span class="verified">✔</span>・牙醫師 <span class="level">Lv5</span></div><div class="meta-sub">二手／買賣・4 小時前</div></div>
-              </div>
-              <h2>【售】九成新口掃機，因診所整併釋出</h2>
-              <p>使用一年半，有保固到明年。台北、新竹可面交。</p>
-              <div class="post-actions"><button class="like-btn">♡ <span>16</span></button><button class="comment-btn">💬 14</button><span>↗ 分享</span></div>
-            </article>
-          </div>
+          <div id="postList"></div>
           <div class="empty" id="emptyState">沒有找到符合的文章，試試其他關鍵字。</div>
         </div>
       </section>
 
       <aside class="right-col">
         <section class="panel">
-          <div class="panel-title">我的等級</div>
+          <div class="panel-title">我的會員權限</div>
           <div class="panel-body">
-            <div class="member-level">
-              <div class="level-badge">9</div>
-              <div><div class="member-name">冠宇</div><div class="member-sub">牙醫師・恆牙</div><div class="member-sub">960 EXP</div></div>
-            </div>
-            <div class="progress"><div class="progress-fill"></div></div>
-            <div class="small-note">距 Lv10 還差 90 經驗值</div>
-            <button class="btn btn-light full-btn" id="levelBtn">看等級與解鎖內容</button>
+            <p id="levelSummary">訪客</p>
+            <button class="btn btn-light full-btn" id="levelBtn">查看會員權限</button>
           </div>
-        </section>
-        <section class="panel">
-          <div class="panel-title">本月熱門文章 TOP 5</div>
-          <ol class="hot-list">
-            <li><span class="hot-number">1</span><a href="#postList">老闆說「大家都是一家人」，接著就宣布調降拆帳</a></li>
-            <li><span class="hot-number">2</span><a href="#postList">健保 91 碼複雜性根管核刪，申復成功經驗分享</a></li>
-            <li><span class="hot-number">3</span><a href="#postList">牙助是不是到哪間都被當萬能小幫手</a></li>
-            <li><span class="hot-number">4</span><a href="#postList">【公告】歡迎來到辣個牙科世界！新手必看</a></li>
-            <li><span class="hot-number">5</span><a href="#postList">隱形矯正進階課心得：附著體設計是成敗關鍵</a></li>
-          </ol>
         </section>
         <section class="panel">
           <div class="panel-title">📌 置頂公告</div>
@@ -553,8 +405,7 @@
 
     <footer class="footer">
       辣個牙科世界 Goddenworld © 2026<br>
-      一起聊聊牙齒大小事 🦷<br>
-      留言功能尚未啟用。
+      一起聊聊牙齒大小事 🦷
     </footer>
   </main>
 
@@ -572,6 +423,10 @@
       </div>
     </form>
     <div id="accountActions" hidden>
+      <p id="accountLevel"></p>
+      <button class="btn btn-light" id="accountPermissions">查看會員權限</button>
+      <button class="btn btn-light" id="moderationBtn" hidden>檢舉管理</button>
+      <button class="btn btn-light" id="memberAdminBtn" hidden>會員管理</button>
       <button class="btn btn-light" id="signOutBtn">登出</button>
     </div>
     <p class="dialog-message" id="authMessage" role="status"></p>
@@ -583,11 +438,21 @@
       <form method="dialog"><button class="btn btn-light">關閉</button></form>
     </div>
     <form class="dialog-form" id="writeForm">
-      <label>標題 <input name="title" required></label>
-      <label>內文 <textarea name="body" rows="8" required></textarea></label>
+      <label>看板 <select name="board" required></select></label>
+      <label>標題 <input name="title" maxlength="160" required></label>
+      <label>內文 <textarea name="body" rows="8" maxlength="20000" required></textarea></label>
       <p class="dialog-message" id="writeMessage" role="status"></p>
       <div class="dialog-actions"><button class="btn btn-primary" id="publishBtn">發表</button></div>
     </form>
+  </dialog>
+
+  <dialog class="site-dialog" id="forumDialog" aria-labelledby="forumTitle">
+    <div class="dialog-head">
+      <h2 id="forumTitle"></h2>
+      <form method="dialog"><button class="btn btn-light">關閉</button></form>
+    </div>
+    <div id="forumContent"></div>
+    <p class="dialog-message" id="forumMessage" role="status"></p>
   </dialog>
 
   <script>
@@ -604,7 +469,7 @@
       postList.querySelectorAll(".post").forEach(post => {
         const matchesCategory = selectedCategory === "全部" || post.dataset.category === selectedCategory;
         const matchesKeyword = (post.dataset.title + " " + post.innerText).toLowerCase().includes(keyword);
-        const visible = matchesCategory && matchesKeyword;
+        const visible = matchesCategory && matchesKeyword && (selectedFeed !== "追蹤" || post.dataset.followed === "true");
         post.style.display = visible ? "" : "none";
         if (visible) shown++;
       });
@@ -629,37 +494,6 @@
       });
     });
 
-    document.querySelectorAll(".feed-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        selectedFeed = tab.dataset.feed;
-        document.querySelectorAll(".feed-tab").forEach(item => item.classList.remove("active"));
-        tab.classList.add("active");
-        if (selectedFeed === "追蹤") {
-          alert("追蹤功能尚未啟用，待會員系統完成後開放。");
-        } else {
-          document.getElementById("feedTitle").textContent =
-            selectedFeed === "全部" ? "全部文章" : "大家都在聊";
-        }
-      });
-    });
-
-    document.querySelectorAll(".like-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        button.classList.toggle("liked");
-        alert("目前是展示介面，按讚紀錄尚未儲存。");
-      });
-    });
-
-    document.querySelectorAll(".comment-btn").forEach(button => {
-      button.addEventListener("click", () => alert("留言功能尚未啟用，後續會接上會員與資料庫。"));
-    });
-
-    document.getElementById("noticeBtn").addEventListener("click", () => {
-      alert("通知功能尚未啟用。");
-    });
-    document.getElementById("levelBtn").addEventListener("click", () => {
-      alert("會員等級與解鎖規則會在後續階段製作。");
-    });
   </script>
   
 <!-- Supabase 連線設定 -->
@@ -726,6 +560,7 @@
   supabaseClient?.auth.onAuthStateChange((_event, session) => {
     currentUser = session?.user ?? null;
     updateAuthDialog();
+    setTimeout(() => refreshMembership(session?.user?.id), 0);
   });
 
   authForm.addEventListener('submit', async event => {
@@ -759,7 +594,10 @@
         const openWriter = writeAfterLogin && authDialog.open;
         writeAfterLogin = false;
         authDialog.close();
-        if (openWriter) showWriter();
+        if (openWriter) {
+          await refreshMembership(data.session.user.id);
+          openWriterForMember();
+        }
       } else {
         registering = false;
         passwordField.value = '';
@@ -787,15 +625,131 @@
     }
   });
 
-  function showWriter() {
-    writeMessage.textContent = '';
-    writeDialog.showModal();
+  const labels = ['訪客／待驗證', '一般會員', '進階會員', '版主', '管理員'];
+  const restrictedBoards = new Set(['徵人／徵工作', '團購', '二手／買賣']);
+  const boards = [...document.querySelectorAll('.board[data-category]')].map(node => node.dataset.category)
+    .filter(board => board !== '全部');
+  const forumDialog = document.getElementById('forumDialog');
+  const forumContent = document.getElementById('forumContent');
+  const forumMessage = document.getElementById('forumMessage');
+  let accessLevel = 0;
+  let membershipUserId;
+  let membershipRequest;
+  let editingPost = null;
+  let memberActions = new Set();
+
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function showForum(title) {
+    authDialog.close();
+    document.getElementById('forumTitle').textContent = title;
+    forumContent.replaceChildren();
+    forumMessage.textContent = '';
+    if (!forumDialog.open) forumDialog.showModal();
+  }
+
+  function requireMember() {
+    if (accessLevel >= 1) return true;
+    if (currentUser) {
+      feedMessage.textContent = '目前無法使用會員功能，請確認電子郵件已驗證後重新登入。';
+    } else {
+      showAuth('請先登入以使用會員功能。');
+    }
+    return false;
+  }
+
+  function action(label, handler) {
+    const button = element('button', label, 'btn btn-light');
+    button.type = 'button';
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      try {
+        await handler();
+      } catch (error) {
+        const target = forumDialog.open ? forumMessage : feedMessage;
+        target.textContent = error.code === '42501' ? '目前帳號沒有這項權限。' : '操作失敗，請稍後再試。';
+      } finally {
+        button.disabled = false;
+      }
+    });
+    return button;
+  }
+
+  function showPermissions() {
+    showForum('會員權限');
+    for (const text of [
+      '訪客可瀏覽、搜尋公開文章。',
+      'Email 驗證後可在一般看板發文、留言、按讚、追蹤和檢舉。',
+      '進階會員由站方人工審核，可在徵人／徵工作、團購及二手／買賣看板發文。',
+      '版主可處理檢舉和下架文章，管理員可設定會員等級及指派版主。'
+    ]) forumContent.append(element('p', text));
+  }
+
+  document.getElementById('levelBtn').addEventListener('click', showPermissions);
+  document.getElementById('accountPermissions').addEventListener('click', showPermissions);
+
+  function updateMembership() {
+    const label = currentUser ? labels[accessLevel] : '訪客';
+    document.getElementById('levelSummary').textContent = label;
+    document.getElementById('accountLevel').textContent = label;
+    document.getElementById('moderationBtn').hidden = accessLevel < 3;
+    document.getElementById('memberAdminBtn').hidden = accessLevel < 4;
+  }
+
+  function refreshMembership(userId) {
+    if (membershipUserId === userId && membershipRequest) return membershipRequest;
+    membershipUserId = userId;
+    accessLevel = 0;
+    memberActions = new Set();
+    updateMembership();
+    if (!userId && selectedFeed === '追蹤') {
+      document.querySelector('.feed-tab[data-feed="全部"]').click();
+    }
+    membershipRequest = (async () => {
+      try {
+        if (userId) {
+          const { data, error } = await supabaseClient.rpc('forum_access_level');
+          if (error) throw error;
+          if (currentUser?.id !== userId) return;
+          accessLevel = data;
+          updateMembership();
+        }
+        await loadMemberPosts();
+      } catch {
+        if (currentUser?.id === userId) feedMessage.textContent = '會員或文章資料暫時無法載入，請重新整理。';
+      }
+    })();
+    return membershipRequest;
+  }
+
+  function openWriterForMember(post = null) {
+    if (!requireMember()) return;
+    editingPost = post;
+    writeForm.reset();
+    const options = boards.filter(board => accessLevel >= 2 || !restrictedBoards.has(board));
+    if (post?.board === '未分類') options.unshift('未分類');
+    writeForm.elements.board.replaceChildren(...options.map(board => new Option(board, board)));
+    writeForm.elements.board.value = options.includes(post?.board) ? post.board
+      : options.includes(selectedCategory) ? selectedCategory : options[0];
+    writeForm.elements.title.value = post?.title ?? '';
+    writeForm.elements.body.value = post?.body ?? '';
+    document.getElementById('writeTitle').textContent = post ? '編輯文章' : '發表文章';
+    publishBtn.textContent = post ? '儲存' : '發表';
+    writeMessage.textContent = !post && accessLevel < 2 && restrictedBoards.has(selectedCategory)
+      ? '這個看板需要進階會員資格。你可以選擇一般看板發文。' : '';
+    if (!writeDialog.open) writeDialog.showModal();
   }
 
   for (const id of ['writeBtn', 'mobileWriteBtn']) {
-    document.getElementById(id).addEventListener('click', () => {
+    document.getElementById(id).addEventListener('click', async () => {
       if (currentUser) {
-        showWriter();
+        await refreshMembership(currentUser.id);
+        openWriterForMember();
       } else {
         writeAfterLogin = true;
         showAuth('請先登入，再發表文章。');
@@ -803,77 +757,243 @@
     });
   }
 
+  document.querySelectorAll('.feed-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.feed === '追蹤' && !requireMember()) return;
+      selectedFeed = tab.dataset.feed;
+      document.querySelectorAll('.feed-tab').forEach(item => item.classList.toggle('active', item === tab));
+      document.getElementById('feedTitle').textContent = selectedFeed === '追蹤' ? '追蹤中的文章'
+        : selectedCategory !== '全部' ? selectedCategory : selectedFeed === '全部' ? '全部文章' : '最新討論';
+      filterPosts();
+    });
+  });
+
+  async function changeAction(postId, kind, button, article) {
+    if (!requireMember()) return;
+    const key = postId + ':' + kind;
+    const selected = memberActions.has(key);
+    const query = supabaseClient.from('forum_post_actions');
+    const { error } = selected
+      ? await query.delete().eq('post_id', postId).eq('kind', kind)
+      : await query.insert({ post_id: postId, kind });
+    if (error && (selected || error.code !== '23505')) throw error;
+    if (selected) memberActions.delete(key);
+    else memberActions.add(key);
+    button.setAttribute('aria-pressed', String(!selected));
+    if (kind === 'follow') article.dataset.followed = String(!selected);
+    filterPosts();
+  }
+
+  function renderPost(post) {
+    const article = element('article', '', 'post member-post');
+    article.id = 'post-' + post.id;
+    article.dataset.category = post.board;
+    article.dataset.title = post.title;
+    article.dataset.followed = String(memberActions.has(post.id + ':follow'));
+    const tools = element('div', '', 'post-actions');
+    const like = action('♡ 按讚', () => changeAction(post.id, 'like', like, article));
+    const follow = action('追蹤', () => changeAction(post.id, 'follow', follow, article));
+    like.setAttribute('aria-pressed', String(memberActions.has(post.id + ':like')));
+    follow.setAttribute('aria-pressed', article.dataset.followed);
+    tools.append(action('留言', () => showComments(post)), like, follow);
+    if (accessLevel >= 1) tools.append(action('檢舉', () => showReport(post)));
+    if (accessLevel >= 1 && post.user_id === currentUser?.id) {
+      if (accessLevel >= 2 || !restrictedBoards.has(post.board)) {
+        tools.append(action('編輯', () => openWriterForMember(post)));
+      }
+      tools.append(action('刪除', async () => {
+        if (!confirm('確定刪除這篇文章及其留言？')) return;
+        const { data, error } = await supabaseClient.from('posts').delete().eq('id', post.id).select('id');
+        if (error) throw error;
+        if (!data.length) throw { code: '42501' };
+        await loadMemberPosts();
+      }));
+    }
+    article.append(element('div', post.board + '・' + new Date(post.created_at).toLocaleDateString('zh-TW'), 'post-meta meta-sub'),
+      element('h2', post.title), element('p', post.body), tools);
+    return article;
+  }
+
   async function loadMemberPosts() {
     const version = ++postLoadVersion;
-    const { data, error } = await supabaseClient.from('posts')
-      .select('id,title,body,created_at')
-      .order('created_at', { ascending: false });
+    const reads = [supabaseClient.from('posts').select('id,user_id,title,body,board,created_at')
+      .order('created_at', { ascending: false }).order('id', { ascending: false })];
+    if (accessLevel >= 1) reads.push(supabaseClient.from('forum_post_actions').select('post_id,kind'));
+    const [posts, actions] = await Promise.all(reads);
     if (version !== postLoadVersion) return;
-    if (error) throw error;
-    const articles = document.createDocumentFragment();
-    for (const post of data) {
-      const article = document.createElement('article');
-      article.className = 'post member-post';
-      article.dataset.category = '未分類';
-      article.dataset.title = post.title;
-      const meta = document.createElement('div');
-      meta.className = 'post-meta meta-sub';
-      meta.textContent = '會員文章・' + new Date(post.created_at).toLocaleDateString('zh-TW');
-      const title = document.createElement('h2');
-      title.textContent = post.title;
-      const body = document.createElement('p');
-      body.textContent = post.body;
-      article.append(meta, title, body);
-      articles.append(article);
-    }
-    postList.querySelectorAll('.member-post').forEach(article => article.remove());
-    postList.prepend(articles);
+    if (posts.error || actions?.error) throw posts.error || actions.error;
+    memberActions = new Set(actions?.data.map(item => item.post_id + ':' + item.kind));
+    postList.replaceChildren(...posts.data.map(renderPost));
     filterPosts();
   }
 
   writeForm.addEventListener('submit', async event => {
     event.preventDefault();
     if (publishBtn.disabled) return;
-    const userId = currentUser?.id;
     const title = writeForm.elements.title.value.trim();
     const body = writeForm.elements.body.value.trim();
-    if (!userId || !title || !body) {
-      writeMessage.textContent = userId ? '請填寫標題和內文。' : '登入已失效，請重新登入。';
+    const board = writeForm.elements.board.value;
+    if (!title || !body || !board) {
+      writeMessage.textContent = '請填寫看板、標題和內文。';
       return;
     }
+    const post = editingPost;
     publishBtn.disabled = true;
-    writeMessage.textContent = '發表中…';
+    writeMessage.textContent = '儲存中…';
     try {
-      const { error } = await supabaseClient.from('posts').insert({ user_id: userId, title, body });
-      if (error) {
-        writeMessage.textContent = error.code === '42501'
-          ? '目前帳號沒有發文權限。'
-          : '發表失敗，請稍後再試。';
-        return;
-      }
-    } catch {
-      writeMessage.textContent = '無法確認是否已發表，請先重新整理文章列表。';
+      const { data, error } = post
+        ? await supabaseClient.from('posts').update({ title, body, board }).eq('id', post.id).select('id')
+        : await supabaseClient.from('posts').insert({ user_id: currentUser?.id, title, body, board }).select('id');
+      if (error) throw error;
+      if (!data.length) throw { code: '42501' };
+    } catch (error) {
+      writeMessage.textContent = error.code === '42501' ? '目前帳號沒有這個看板的發文或編輯權限。' : '儲存失敗，請先重新整理確認結果。';
       return;
     } finally {
       publishBtn.disabled = false;
     }
-    writeForm.reset();
     writeDialog.close();
     searchInput.value = '';
+    document.querySelector('.feed-tab[data-feed="全部"]').click();
     document.querySelector('.board[data-category="全部"]').click();
-    try {
-      await loadMemberPosts();
-      feedMessage.textContent = '文章已發表。';
-    } catch {
-      feedMessage.textContent = '文章已發表，請重新整理以載入文章。';
+    feedMessage.textContent = post ? '文章已更新。' : '文章已發表。';
+    try { await loadMemberPosts(); }
+    catch { feedMessage.textContent += ' 請重新整理以載入文章。'; }
+  });
+
+  async function showComments(post) {
+    showForum('留言｜' + post.title);
+    const list = element('div', '');
+    forumContent.append(list);
+    if (accessLevel >= 1) {
+      appendForumForm('新增留言', '留言', 5000, async body => {
+        const { error } = await supabaseClient.from('comments').insert({ post_id: post.id, user_id: currentUser.id, body });
+        if (error) throw error;
+        await showComments(post);
+      });
+    } else {
+      forumContent.append(element('p', '請登入並完成 Email 驗證後留言。'));
+    }
+    const { data, error } = await supabaseClient.from('comments').select('body,created_at')
+      .eq('post_id', post.id).order('created_at', { ascending: true });
+    if (error) throw error;
+    if (!data.length) list.append(element('p', '目前還沒有留言。'));
+    for (const comment of data) {
+      list.append(element('p', comment.body, 'forum-comment'));
+    }
+  }
+
+  function appendForumForm(label, buttonText, length, handler) {
+    const form = element('form', '', 'dialog-form');
+    const fieldLabel = element('label', label);
+    const input = element('textarea', '');
+    input.required = true;
+    input.maxLength = length;
+    input.rows = 3;
+    fieldLabel.append(input);
+    const button = element('button', buttonText, 'btn btn-primary');
+    form.append(fieldLabel, button);
+    forumContent.append(form);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value || button.disabled) return;
+      button.disabled = true;
+      forumMessage.textContent = '';
+      try { await handler(value); input.value = ''; }
+      catch (error) { forumMessage.textContent = error.code === '23505' ? '你已檢舉過這篇文章。' : '送出失敗，請稍後再試。'; }
+      finally { button.disabled = false; }
+    });
+  }
+
+  function showReport(post) {
+    showForum('檢舉文章');
+    appendForumForm('檢舉原因', '送出檢舉', 500, async reason => {
+      const { error } = await supabaseClient.from('forum_reports').insert({ post_id: post.id, reason });
+      if (error) throw error;
+      forumContent.replaceChildren(element('p', '檢舉已送出。'));
+    });
+  }
+
+  async function showReports() {
+    showForum('檢舉管理');
+    const { data, error } = await supabaseClient.from('forum_reports')
+      .select('id,reason,posts(title,body)').eq('resolved', false).order('created_at', { ascending: true });
+    if (error) { forumMessage.textContent = '無法載入檢舉。'; return; }
+    if (!data.length) forumContent.append(element('p', '目前沒有待處理的檢舉。'));
+    for (const report of data) {
+      const item = element('section', '', 'forum-comment');
+      const resolve = async hide => {
+        if (hide && !confirm('確定下架這篇文章？')) return;
+        const result = await supabaseClient.rpc('forum_resolve_report', { report_id: report.id, hide_post: hide });
+        if (result.error) throw result.error;
+        await Promise.all([loadMemberPosts(), showReports()]);
+      };
+      item.append(element('h3', report.posts?.title ?? '文章已下架'),
+        element('p', report.posts?.body ?? ''), element('p', '檢舉原因｜' + report.reason),
+        action('標記已處理', () => resolve(false)), action('下架文章', () => resolve(true)));
+      forumContent.append(item);
+    }
+  }
+  document.getElementById('moderationBtn').addEventListener('click', showReports);
+
+  document.getElementById('memberAdminBtn').addEventListener('click', () => {
+    showForum('會員管理');
+    const form = element('form', '', 'dialog-form');
+    const emailLabel = element('label', '會員 Email');
+    const email = element('input', '');
+    email.type = 'email';
+    email.required = true;
+    emailLabel.append(email);
+    const roleLabel = element('label', '設定權限');
+    const role = element('select', '');
+    for (const [value, label] of [['member', '一般會員'], ['advanced', '進階會員'], ['moderator', '版主']]) {
+      role.add(new Option(label, value));
+    }
+    roleLabel.append(role);
+    const submit = element('button', '儲存權限', 'btn btn-primary');
+    form.append(emailLabel, roleLabel, submit);
+    forumContent.append(form);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (submit.disabled) return;
+      submit.disabled = true;
+      try {
+        const { error } = await supabaseClient.rpc('forum_set_member_access', { member_email: email.value, new_access: role.value });
+        if (error) throw error;
+        forumMessage.textContent = '會員權限已更新。';
+        form.reset();
+      } catch (error) {
+        forumMessage.textContent = error.code === 'P0002' ? '找不到已驗證的會員。' : '無法更新這個帳號的權限。';
+      } finally { submit.disabled = false; }
+    });
+  });
+
+  document.getElementById('noticeBtn').addEventListener('click', async () => {
+    if (!requireMember()) return;
+    showForum('我的通知');
+    const { data, error } = await supabaseClient.from('forum_notifications')
+      .select('id,post_id,created_at,is_read,posts(title)').order('created_at', { ascending: false }).limit(50);
+    if (error) { forumMessage.textContent = '通知暫時無法載入。'; return; }
+    if (!data.length) forumContent.append(element('p', '目前沒有通知。'));
+    for (const notice of data) {
+      const button = action((notice.is_read ? '' : '未讀｜') + (notice.posts?.title ?? '文章') + ' 有新留言', async () => {
+        const { error } = await supabaseClient.from('forum_notifications').update({ is_read: true }).eq('id', notice.id);
+        if (error) throw error;
+        const { data: post, error: postError } = await supabaseClient.from('posts')
+          .select('id,title,body,board,created_at,user_id').eq('id', notice.post_id).maybeSingle();
+        if (postError) throw postError;
+        if (post) await showComments(post);
+        else forumMessage.textContent = '這篇文章目前無法查看。';
+      });
+      const row = element('p', '');
+      row.append(button);
+      forumContent.append(row);
     }
   });
 
-  if (supabaseClient) {
-    loadMemberPosts().catch(() => {
-      feedMessage.textContent = '會員文章暫時無法載入，請稍後重新整理。';
-    });
-  }
+  if (supabaseClient) refreshMembership();
+  else feedMessage.textContent = '論壇服務載入失敗，請重新整理。';
 </script>
 
 </body>
