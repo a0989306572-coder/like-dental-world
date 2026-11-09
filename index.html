@@ -67,7 +67,8 @@
     }
     .search:focus { border-color: #9db8f5; background: white; }
     .nav-actions { display: flex; align-items: center; gap: 10px; }
-    .nav-link { color: #596274; white-space: nowrap; }
+    .topbar .brand { display: none; }
+    .nav-actions { margin-left: auto; }
     .btn {
       border: 0;
       border-radius: 9px;
@@ -99,7 +100,7 @@
     }
     .layout {
       display: grid;
-      grid-template-columns: 220px minmax(0, 1fr) 265px;
+      grid-template-columns: 245px minmax(0, 1fr) 265px;
       gap: 20px;
       align-items: start;
     }
@@ -268,9 +269,80 @@
     .dialog-message:empty { display: none; }
     .member-post p { white-space: pre-wrap; overflow-wrap: anywhere; }
     .member-post h2 { overflow-wrap: anywhere; }
-    #mobileWriteBtn { display: none; }
+    .sidebar {
+      position: sticky;
+      top: 78px;
+      max-height: calc(100dvh - 94px);
+      overflow: auto;
+      padding: 17px 14px 16px;
+      background: #ebf1fa;
+      border-radius: 18px;
+      color: #142840;
+    }
+    .sidebar-brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 3px 5px;
+      margin-bottom: 24px;
+      color: #142840;
+    }
+    .sidebar-brand svg { width: 35px; height: 35px; color: #2c82ef; flex: none; }
+    .sidebar-brand strong { display: block; font-size: 20px; font-weight: 850; line-height: 1.2; }
+    .sidebar-brand small { display: block; color: #1a69cc; font-size: 12px; font-weight: 800; letter-spacing: .7px; }
+    .sidebar-nav { display: grid; gap: 4px; }
+    .sidebar-item {
+      display: flex;
+      position: relative;
+      align-items: center;
+      gap: 13px;
+      width: 100%;
+      min-height: 49px;
+      padding: 9px 13px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      font-size: 17px;
+    }
+    .sidebar-item svg { width: 23px; height: 23px; flex: none; }
+    .sidebar-item:not(:disabled):hover { background: #f6f9fe; }
+    .sidebar-item[aria-current="true"] {
+      background: #fff;
+      color: #175cb6;
+      font-weight: 750;
+      box-shadow: 0 5px 17px rgb(24 54 96 / 10%);
+    }
+    .sidebar-item:disabled { cursor: default; color: #596a80; }
+    .sidebar-item small { margin-left: auto; font-size: 10px; }
+    .sidebar-badge {
+      position: absolute;
+      top: 5px;
+      left: 27px;
+      min-width: 17px;
+      padding: 2px 3px;
+      border-radius: 99px;
+      background: #c93642;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 13px;
+      text-align: center;
+    }
+    .sidebar-write {
+      margin-top: 15px;
+      width: 100%;
+      border-radius: 99px;
+      background: #216bc8;
+      color: #fff;
+      font-size: 16px;
+    }
+    .sidebar-write:hover { background: #175cb6; }
+    .sidebar .boards-panel { margin: 8px 0 4px; }
+    .center-col { scroll-margin-top: 125px; }
     @media (max-width: 1000px) {
-      .layout { grid-template-columns: 190px minmax(0,1fr); }
+      .layout { grid-template-columns: 220px minmax(0,1fr); }
       .right-col { display: none; }
       .brand { min-width: 185px; }
       .nav { gap: 15px; }
@@ -280,10 +352,18 @@
       .brand { min-width: 0; flex: 1; }
       .brand-name { font-size: 17px; }
       .search { order: 3; flex-basis: 100%; max-width: none; }
-      .nav-link { display: none; }
+      .topbar .brand { display: block; }
       .nav-actions { gap: 6px; }
       .nav-actions .btn { padding: 9px 11px; }
-      #mobileWriteBtn { display: inline-block; }
+      .sidebar { position: static; max-height: none; padding: 10px; }
+      .sidebar-brand { display: none; }
+      .sidebar-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .sidebar-item { flex-direction: column; justify-content: center; gap: 3px; padding: 6px 3px; text-align: center; font-size: 13px; }
+      .sidebar-item svg { width: 21px; height: 21px; }
+      .sidebar-item small { margin-left: 0; }
+      .sidebar-badge { left: calc(50% + 3px); }
+      .sidebar-write { margin-top: 9px; }
+      .sidebar .boards-panel { margin: 8px 0 0; }
       .page { margin: 14px auto; padding: 0 12px; }
       .hero { padding: 21px 18px; }
       .hero h1 { font-size: 22px; }
@@ -295,7 +375,7 @@
       .board { flex-shrink: 0; padding: 7px; }
       .board-name { white-space: nowrap; font-size: 12px; }
       .board-icon { width: 27px; height: 27px; }
-      .left-col .panel:not(.boards-panel) { display: none; }
+
       .post { padding: 14px; }
       .post h2 { font-size: 15px; }
       .feed-tabs { gap: 20px; }
@@ -311,47 +391,44 @@
       </a>
       <input class="search" id="searchInput" placeholder="⌕ 搜尋看板、文章、牙科職涯……" aria-label="搜尋文章">
       <div class="nav-actions">
-        <a class="nav-link" href="#boards">看板</a>
-        <button class="btn btn-light" id="noticeBtn">通知</button>
         <button class="btn btn-primary" id="loginBtn">登入／註冊</button>
       </div>
     </nav>
   </header>
 
   <main class="page">
-    <section class="hero">
-      <div>
-        <h1>牙科人的第二個休息室。</h1>
-        <p>診間裡不好說的，來這裡聊聊。<br>職涯、健保、八卦、開業，牙科大小事都能交流。</p>
-      </div>
-      <div class="hero-tag">🦷 專屬牙科人的交流論壇</div>
-    </section>
-
     <div class="layout">
-      <aside class="left-col">
-        <section class="panel">
-          <div class="panel-title">✦ 快速入口</div>
-          <div class="panel-body">
-            <button class="btn btn-primary full-btn" id="writeBtn">＋ 發表文章</button>
-            <p class="small-note">分享經驗、提出問題，讓更多牙科人一起交流。</p>
-          </div>
-        </section>
-        <section class="panel boards-panel" id="boards">
+      <aside class="left-col sidebar">
+        <a class="sidebar-brand" id="sidebarBrand" href="#" aria-label="辣個牙科世界首頁">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.8c-2.6 0-3.9-1.4-6.3-1.1C1.9 3.2 1.8 7.5 3 11c.8 2.6 1.6 3.3 2.2 6.5.4 2.1.9 4 2.3 4 1.9 0 1.6-3.2 2.6-5.4.8-1.9 3-1.9 3.8 0 1 2.2.7 5.4 2.6 5.4 1.4 0 1.9-1.9 2.3-4 .6-3.2 1.4-3.9 2.2-6.5 1.2-3.5 1.1-7.8-2.7-8.3-2.4-.3-3.7 1.1-6.3 1.1Z"/></svg>
+          <span><strong>辣個牙科世界</strong><small>GODDENWORLD</small></span>
+        </a>
+        <nav class="sidebar-nav" aria-label="論壇導覽">
+          <button type="button" class="sidebar-item" id="homeNav" aria-current="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>首頁</span></button>
+          <button type="button" class="sidebar-item" id="boardsNav" aria-controls="boards" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>看板</span></button>
+          <button type="button" class="sidebar-item" id="cardsNav" disabled><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="4" width="9" height="15" rx="1.5"/><rect x="4" y="6" width="9" height="15" rx="1.5" transform="rotate(-12 8.5 13.5)"/></svg><span>抽卡</span> <small>尚未開放</small></button>
+          <button type="button" class="sidebar-item" id="searchNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>搜尋</span></button>
+          <button type="button" class="sidebar-item" id="profileNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>個人</span></button>
+          <button type="button" class="sidebar-item" id="noticeBtn" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10m-8 13a2 2 0 0 0 4 0"/></svg><span>通知</span><span class="sidebar-badge" id="noticeBadge" hidden></span></button>
+          <button type="button" class="sidebar-item" id="messagesNav" disabled><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a9 9 0 0 1-9 9 9.4 9.4 0 0 1-4-.9L3 21l1.4-4.5a9 9 0 1 1 16.6-5z"/></svg><span>私訊</span> <small>尚未開放</small></button>
+        </nav>
+        <section class="panel boards-panel" id="boards" hidden>
           <div class="panel-title">探索看板</div>
-          <div class="section-label">熱門分類</div>
           <div class="board-list" id="boardList">
-            <a href="#" class="board active" data-category="全部"><span class="board-icon">推</span><span class="board-name">推薦文章</span></a>
+            <a href="#" class="board active" data-category="全部"><span class="board-icon">全</span><span class="board-name">全部看板</span></a>
           </div>
         </section>
-        <section class="panel">
-          <div class="panel-title">關於 Goddenworld</div>
-          <div class="panel-body small-note">
-            讓牙醫師、牙助、牙技師、學生與產業夥伴，都能找到交流的地方。
-          </div>
-        </section>
+        <button type="button" class="btn sidebar-write" id="writeBtn">＋ 發文</button>
       </aside>
 
       <section class="center-col">
+        <section class="hero">
+          <div>
+            <h1>牙科人的第二個休息室。</h1>
+            <p>診間裡不好說的，來這裡聊聊。<br>職涯、健保、八卦、開業，牙科大小事都能交流。</p>
+          </div>
+          <div class="hero-tag">🦷 專屬牙科人的交流論壇</div>
+        </section>
         <div class="panel">
           <div class="feed-tabs">
             <button class="feed-tab active" data-feed="推薦">最新</button>
@@ -360,7 +437,6 @@
           </div>
           <div class="feed-head">
             <strong id="feedTitle">大家都在聊</strong>
-            <button class="btn btn-primary" id="mobileWriteBtn">＋ 發表文章</button>
             <span id="postCount">熱門討論</span>
           </div>
           <p id="feedMessage" class="dialog-message" role="status"></p>
@@ -468,7 +544,53 @@
       postCount.textContent = shown + " 篇文章";
     }
 
-    searchInput.addEventListener("input", filterPosts);
+    const homeNav = document.getElementById('homeNav');
+    const boardsNav = document.getElementById('boardsNav');
+    const searchNav = document.getElementById('searchNav');
+    const boardsPanel = document.getElementById('boards');
+
+    function highlightNavigation(active) {
+      for (const item of [homeNav, boardsNav, searchNav]) {
+        if (item === active) item.setAttribute('aria-current', 'true');
+        else item.removeAttribute('aria-current');
+      }
+    }
+
+    function toggleBoards(open) {
+      boardsPanel.hidden = !open;
+      boardsNav.setAttribute('aria-expanded', String(open));
+    }
+
+    function goHome(event) {
+      event.preventDefault();
+      searchInput.value = '';
+      selectedCategory = '全部';
+      selectedFeed = '推薦';
+      boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item.dataset.category === '全部'));
+      document.querySelector('.feed-tab[data-feed="推薦"]').click();
+      toggleBoards(false);
+      highlightNavigation(homeNav);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    homeNav.addEventListener('click', goHome);
+    document.getElementById('sidebarBrand').addEventListener('click', goHome);
+    document.querySelector('.topbar .brand').addEventListener('click', goHome);
+    boardsNav.addEventListener('click', () => {
+      toggleBoards(boardsPanel.hidden);
+      highlightNavigation(boardsPanel.hidden && selectedCategory === '全部' ? homeNav : boardsNav);
+      if (!boardsPanel.hidden) boardsPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+    searchNav.addEventListener('click', () => {
+      selectedCategory = '全部';
+      boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item.dataset.category === '全部'));
+      document.querySelector('.feed-tab[data-feed="全部"]').click();
+      toggleBoards(false);
+      highlightNavigation(searchNav);
+      searchInput.focus();
+    });
+    searchInput.addEventListener('focus', () => highlightNavigation(searchNav));
+    searchInput.addEventListener('input', filterPosts);
 
     const boardList = document.getElementById('boardList');
     boardList.addEventListener('click', event => {
@@ -476,6 +598,7 @@
       if (!board) return;
       event.preventDefault();
       selectedCategory = board.dataset.category;
+      if (!boardsPanel.hidden) highlightNavigation(boardsNav);
       boardList.querySelectorAll('.board').forEach(item => item.classList.toggle('active', item === board));
       updateFeedTitle();
       filterPosts();
@@ -533,6 +656,8 @@
     authMessage.textContent = supabaseClient ? message : '會員服務載入失敗，請重新整理頁面。';
     if (!authDialog.open) authDialog.showModal();
   }
+
+  document.getElementById('profileNav').addEventListener('click', () => loginBtn.click());
 
   loginBtn.addEventListener('click', () => {
     writeAfterLogin = false;
@@ -730,6 +855,8 @@
     if (membershipUserId === userId && membershipRequest) return membershipRequest;
     membershipUserId = userId;
     accessLevel = 0;
+    document.getElementById('noticeBadge').hidden = true;
+    document.getElementById('noticeBtn').removeAttribute('aria-label');
     memberActions = new Set();
     updateMembership();
     if (!userId && selectedFeed === '追蹤') {
@@ -743,6 +870,7 @@
           if (currentUser?.id !== userId) return;
           accessLevel = data;
           updateMembership();
+          refreshNoticeBadge();
         }
         await loadMemberPosts();
       } catch {
@@ -774,17 +902,15 @@
     if (!writeDialog.open) writeDialog.showModal();
   }
 
-  for (const id of ['writeBtn', 'mobileWriteBtn']) {
-    document.getElementById(id).addEventListener('click', async () => {
-      if (currentUser) {
-        await Promise.all([refreshMembership(currentUser.id), initialBoardLoad]);
-        openWriterForMember();
-      } else {
-        writeAfterLogin = true;
-        showAuth('請先登入，再發表文章。');
-      }
-    });
-  }
+  document.getElementById('writeBtn').addEventListener('click', async () => {
+    if (currentUser) {
+      await Promise.all([refreshMembership(currentUser.id), initialBoardLoad]);
+      openWriterForMember();
+    } else {
+      writeAfterLogin = true;
+      showAuth('請先登入，再發表文章。');
+    }
+  });
 
   document.querySelectorAll('.feed-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1116,8 +1242,27 @@
     }
   });
 
+  let badgeRequest = 0;
+  async function refreshNoticeBadge() {
+    if (accessLevel < 1) return;
+    const userId = currentUser?.id;
+    const version = ++badgeRequest;
+    try {
+      const { count, error } = await supabaseClient.from('forum_notifications')
+        .select('id', { count: 'exact', head: true }).eq('is_read', false);
+      if (error || currentUser?.id !== userId || version !== badgeRequest) return;
+      const badge = document.getElementById('noticeBadge');
+      badge.hidden = !count;
+      badge.textContent = count > 99 ? '99+' : String(count);
+      document.getElementById('noticeBtn').setAttribute('aria-label', count ? '通知，' + count + ' 則未讀' : '通知');
+    } catch {
+      // A badge refresh failure does not block the notifications dialog.
+    }
+  }
+
   document.getElementById('noticeBtn').addEventListener('click', async () => {
     if (!requireMember()) return;
+    refreshNoticeBadge();
     showForum('我的通知');
     const { data, error } = await supabaseClient.from('forum_notifications')
       .select('id,post_id,created_at,is_read,posts(title)').order('created_at', { ascending: false }).limit(50);
@@ -1127,6 +1272,7 @@
       const button = action((notice.is_read ? '' : '未讀｜') + (notice.posts?.title ?? '文章') + ' 有新留言', async () => {
         const { error } = await supabaseClient.from('forum_notifications').update({ is_read: true }).eq('id', notice.id);
         if (error) throw error;
+        refreshNoticeBadge();
         const { data: post, error: postError } = await supabaseClient.from('posts')
           .select('id,title,body,board,created_at,user_id').eq('id', notice.post_id).maybeSingle();
         if (postError) throw postError;
