@@ -427,6 +427,8 @@
       <button class="btn btn-light" id="accountPermissions">查看會員權限</button>
       <button class="btn btn-light" id="moderationBtn" hidden>檢舉管理</button>
       <button class="btn btn-light" id="memberAdminBtn" hidden>會員管理</button>
+      <button class="btn btn-light" id="boardAdminBtn" hidden>編輯探索看板</button>
+      <button class="btn btn-light" id="hiddenPostsBtn" hidden>已下架文章</button>
       <button class="btn btn-light" id="signOutBtn">登出</button>
     </div>
     <p class="dialog-message" id="authMessage" role="status"></p>
@@ -485,8 +487,7 @@
         selectedCategory = board.dataset.category;
         document.querySelectorAll(".board").forEach(item => item.classList.remove("active"));
         board.classList.add("active");
-        document.getElementById("feedTitle").textContent =
-          selectedCategory === "全部" ? "大家都在聊" : selectedCategory;
+        updateFeedTitle();
         filterPosts();
         if (window.innerWidth <= 650) {
           document.querySelector(".center-col").scrollIntoView({ behavior: "smooth" });
@@ -627,8 +628,29 @@
 
   const labels = ['訪客／待驗證', '一般會員', '進階會員', '版主', '管理員'];
   const restrictedBoards = new Set(['徵人／徵工作', '團購', '二手／買賣']);
-  const boards = [...document.querySelectorAll('.board[data-category]')].map(node => node.dataset.category)
-    .filter(board => board !== '全部');
+  const boardLinks = [...document.querySelectorAll('.board[data-category]')]
+    .filter(node => node.dataset.category !== '全部');
+  const boards = boardLinks.map(node => node.dataset.category);
+  const boardLabels = new Map();
+
+  function boardLabel(key) {
+    return boardLabels.get(key) ?? key;
+  }
+
+  function updateFeedTitle() {
+    document.getElementById('feedTitle').textContent = selectedFeed === '追蹤' ? '追蹤中的文章'
+      : selectedCategory !== '全部' ? boardLabel(selectedCategory) : selectedFeed === '全部' ? '全部文章' : '最新討論';
+  }
+
+  async function loadBoardLabels() {
+    const { data, error } = await supabaseClient.from('forum_boards').select('board_key,label');
+    if (error) throw error;
+    data.forEach(row => boardLabels.set(row.board_key, row.label));
+    boardLinks.forEach(link => {
+      link.querySelector('.board-name').textContent = boardLabel(link.dataset.category);
+    });
+    updateFeedTitle();
+  }
   const forumDialog = document.getElementById('forumDialog');
   const forumContent = document.getElementById('forumContent');
   const forumMessage = document.getElementById('forumMessage');
@@ -685,8 +707,9 @@
     for (const text of [
       '訪客可瀏覽、搜尋公開文章。',
       'Email 驗證後可在一般看板發文、留言、按讚、追蹤和檢舉。',
-      '進階會員由站方人工審核，可在徵人／徵工作、團購及二手／買賣看板發文。',
-      '版主可處理檢舉和下架文章，管理員可設定會員等級及指派版主。'
+      '進階會員由站方人工審核，可在' + [...restrictedBoards].map(boardLabel).join('、') + '看板發文。',
+      '版主可處理檢舉和下架文章。',
+      '管理員可設定會員等級、指派版主、刪除文章及編輯探索看板名稱。'
     ]) forumContent.append(element('p', text));
   }
 
@@ -698,7 +721,9 @@
     document.getElementById('levelSummary').textContent = label;
     document.getElementById('accountLevel').textContent = label;
     document.getElementById('moderationBtn').hidden = accessLevel < 3;
-    document.getElementById('memberAdminBtn').hidden = accessLevel < 4;
+    for (const id of ['memberAdminBtn', 'boardAdminBtn', 'hiddenPostsBtn']) {
+      document.getElementById(id).hidden = accessLevel < 4;
+    }
   }
 
   function refreshMembership(userId) {
@@ -733,7 +758,7 @@
     writeForm.reset();
     const options = boards.filter(board => accessLevel >= 2 || !restrictedBoards.has(board));
     if (post?.board === '未分類') options.unshift('未分類');
-    writeForm.elements.board.replaceChildren(...options.map(board => new Option(board, board)));
+    writeForm.elements.board.replaceChildren(...options.map(board => new Option(boardLabel(board), board)));
     writeForm.elements.board.value = options.includes(post?.board) ? post.board
       : options.includes(selectedCategory) ? selectedCategory : options[0];
     writeForm.elements.title.value = post?.title ?? '';
@@ -762,8 +787,7 @@
       if (tab.dataset.feed === '追蹤' && !requireMember()) return;
       selectedFeed = tab.dataset.feed;
       document.querySelectorAll('.feed-tab').forEach(item => item.classList.toggle('active', item === tab));
-      document.getElementById('feedTitle').textContent = selectedFeed === '追蹤' ? '追蹤中的文章'
-        : selectedCategory !== '全部' ? selectedCategory : selectedFeed === '全部' ? '全部文章' : '最新討論';
+      updateFeedTitle();
       filterPosts();
     });
   });
@@ -801,23 +825,34 @@
       if (accessLevel >= 2 || !restrictedBoards.has(post.board)) {
         tools.append(action('編輯', () => openWriterForMember(post)));
       }
+    }
+    if (accessLevel === 4 || (accessLevel >= 1 && post.user_id === currentUser?.id)) {
       tools.append(action('刪除', async () => {
-        if (!confirm('確定刪除這篇文章及其留言？')) return;
-        const { data, error } = await supabaseClient.from('posts').delete().eq('id', post.id).select('id');
-        if (error) throw error;
-        if (!data.length) throw { code: '42501' };
-        await loadMemberPosts();
+        if (await deletePost(post)) {
+          article.remove();
+          filterPosts();
+          feedMessage.textContent = '文章已刪除。';
+          await loadMemberPosts();
+        }
       }));
     }
-    article.append(element('div', post.board + '・' + new Date(post.created_at).toLocaleDateString('zh-TW'), 'post-meta meta-sub'),
+    article.append(element('div', boardLabel(post.board) + '・' + new Date(post.created_at).toLocaleDateString('zh-TW'), 'post-meta meta-sub'),
       element('h2', post.title), element('p', post.body), tools);
     return article;
+  }
+
+  async function deletePost(post) {
+    if (!confirm('確定永久刪除「' + post.title + '」及其留言？')) return false;
+    const { data, error } = await supabaseClient.from('posts').delete().eq('id', post.id).select('id');
+    if (error) throw error;
+    if (!data.length) throw { code: '42501' };
+    return true;
   }
 
   async function loadMemberPosts() {
     const version = ++postLoadVersion;
     const reads = [supabaseClient.from('posts').select('id,user_id,title,body,board,created_at')
-      .order('created_at', { ascending: false }).order('id', { ascending: false })];
+      .is('hidden_at', null).order('created_at', { ascending: false }).order('id', { ascending: false })];
     if (accessLevel >= 1) reads.push(supabaseClient.from('forum_post_actions').select('post_id,kind'));
     const [posts, actions] = await Promise.all(reads);
     if (version !== postLoadVersion) return;
@@ -969,6 +1004,91 @@
     });
   });
 
+  document.getElementById('boardAdminBtn').addEventListener('click', () => {
+    if (accessLevel !== 4) return;
+    showForum('編輯探索看板');
+    const form = element('form', '', 'dialog-form');
+    const boardField = element('label', '選擇看板');
+    const boardSelect = element('select', '');
+    boardField.append(boardSelect);
+    const nameField = element('label', '看板名稱');
+    const name = element('input', '');
+    name.required = true;
+    name.maxLength = 40;
+    nameField.append(name);
+    const save = element('button', '儲存名稱', 'btn btn-primary');
+    const refreshOptions = key => {
+      boardSelect.replaceChildren(...boards.map(board => new Option(boardLabel(board), board)));
+      boardSelect.value = key;
+      name.value = boardLabel(key);
+    };
+    refreshOptions(boards[0]);
+    boardSelect.addEventListener('change', () => {
+      name.value = boardLabel(boardSelect.value);
+      forumMessage.textContent = '';
+    });
+    form.append(boardField, nameField, save);
+    forumContent.append(form);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (save.disabled) return;
+      const key = boardSelect.value;
+      const previous = boardLabel(key);
+      const label = name.value.trim();
+      if (!label) {
+        forumMessage.textContent = '請輸入看板名稱。';
+        return;
+      }
+      if (label === previous) return;
+      save.disabled = true;
+      boardSelect.disabled = true;
+      name.disabled = true;
+      forumMessage.textContent = '';
+      try {
+        const { data, error } = await supabaseClient.from('forum_boards').update({ label })
+          .eq('board_key', key).eq('label', previous).select('board_key,label');
+        if (error) throw error;
+        await loadBoardLabels();
+        refreshOptions(key);
+        forumMessage.textContent = data.length ? '看板名稱已更新。' : '名稱已被其他人修改，請確認目前名稱。';
+        await loadMemberPosts();
+      } catch (error) {
+        forumMessage.textContent = error.code === '23505' ? '這個名稱已被其他看板使用。'
+          : error.code === '23514' ? '請使用 1 到 40 個字，且避開保留名稱。' : '無法確認更新結果，請重新整理後查看。';
+      } finally {
+        save.disabled = false;
+        boardSelect.disabled = false;
+        name.disabled = false;
+      }
+    });
+  });
+
+  document.getElementById('hiddenPostsBtn').addEventListener('click', async () => {
+    if (accessLevel !== 4) return;
+    showForum('已下架文章');
+    const list = element('div', '');
+    forumContent.append(list);
+    const { data, error } = await supabaseClient.from('posts').select('id,title,board')
+      .not('hidden_at', 'is', null).order('hidden_at', { ascending: false });
+    if (error) {
+      forumMessage.textContent = '無法載入已下架文章。';
+      return;
+    }
+    if (!data.length) list.append(element('p', '目前沒有已下架文章。'));
+    for (const post of data) {
+      const row = element('section', '', 'forum-comment');
+      row.append(element('h3', post.title), element('p', boardLabel(post.board)),
+        action('永久刪除', async () => {
+          if (await deletePost(post)) {
+            row.remove();
+            forumMessage.textContent = '文章已刪除。';
+            if (!list.children.length) list.append(element('p', '目前沒有已下架文章。'));
+          }
+        }));
+      list.append(row);
+    }
+  });
+
   document.getElementById('noticeBtn').addEventListener('click', async () => {
     if (!requireMember()) return;
     showForum('我的通知');
@@ -992,8 +1112,12 @@
     }
   });
 
-  if (supabaseClient) refreshMembership();
-  else feedMessage.textContent = '論壇服務載入失敗，請重新整理。';
+  if (supabaseClient) {
+    loadBoardLabels().then(() => {
+      if (postList.children.length) return loadMemberPosts();
+    }).catch(() => {});
+    refreshMembership();
+  } else feedMessage.textContent = '論壇服務載入失敗，請重新整理。';
 </script>
 
 </body>
