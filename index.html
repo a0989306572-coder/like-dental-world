@@ -1101,27 +1101,86 @@ async function loadMemberPosts() {
     catch { feedMessage.textContent += ' 請重新整理以載入文章。'; }
   });
 
-  async function showComments(post) {
+  
+async function showComments(post) {
     showForum('留言｜' + post.title);
     const list = element('div', '');
     forumContent.append(list);
+
     if (accessLevel >= 1) {
       appendForumForm('新增留言', '留言', 5000, async body => {
-        const { error } = await supabaseClient.from('comments').insert({ post_id: post.id, user_id: currentUser.id, body });
+        const { error } = await supabaseClient.from('comments').insert({
+          post_id: post.id,
+          user_id: currentUser.id,
+          body
+        });
         if (error) throw error;
         await showComments(post);
       });
     } else {
       forumContent.append(element('p', '請登入並完成 Email 驗證後留言。'));
     }
-    const { data, error } = await supabaseClient.from('comments').select('body,created_at')
-      .eq('post_id', post.id).order('created_at', { ascending: true });
+
+    const { data, error } = await supabaseClient
+      .from('comments')
+      .select('user_id,body,created_at')
+      .eq('post_id', post.id)
+      .order('created_at', { ascending: true });
+
     if (error) throw error;
-    if (!data.length) list.append(element('p', '目前還沒有留言。'));
+
+    if (!data.length) {
+      list.append(element('p', '目前還沒有留言。'));
+      return;
+    }
+
+    const userIds = [
+      ...new Set(data.map(comment => comment.user_id).filter(Boolean))
+    ];
+
+    const profileMap = new Map();
+
+    if (userIds.length) {
+      const { data: profiles, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('id,display_name,avatar_url')
+        .in('id', userIds);
+
+      if (!profileError && profiles) {
+        profiles.forEach(profile => {
+          profileMap.set(profile.id, profile);
+        });
+      }
+    }
+
     for (const comment of data) {
-      list.append(element('p', comment.body, 'forum-comment'));
+      const author = profileMap.get(comment.user_id);
+      const authorRow = element('div', '', 'comment-author');
+
+      if (author?.avatar_url) {
+        const avatar = element('img');
+        avatar.src = author.avatar_url;
+        avatar.alt = '會員頭像';
+        avatar.width = 32;
+        avatar.height = 32;
+        avatar.style.width = '32px';
+        avatar.style.height = '32px';
+        avatar.style.objectFit = 'cover';
+        avatar.style.borderRadius = '50%';
+        authorRow.append(avatar);
+      }
+
+      authorRow.append(
+        element('span', author?.display_name || '匿名會員')
+      );
+
+      list.append(
+        authorRow,
+        element('p', comment.body, 'forum-comment')
+      );
     }
   }
+
 
   function appendForumForm(label, buttonText, length, handler) {
     const form = element('form', '', 'dialog-form');
