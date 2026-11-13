@@ -1463,6 +1463,20 @@ const { data, error } = await supabaseClient
   .maybeSingle();
       if (error) throw error;
       if (data?.display_name) name.textContent = data.display_name;
+            if (data?.avatar_url) {
+        const avatar = element('img');
+        avatar.src = data.avatar_url;
+        avatar.alt = '會員頭像';
+        avatar.width = 100;
+        avatar.height = 100;
+        avatar.style.width = '100px';
+        avatar.style.height = '100px';
+        avatar.style.objectFit = 'cover';
+        avatar.style.borderRadius = '50%';
+        avatar.style.display = 'block';
+        avatar.style.marginBottom = '12px';
+        profile.insertBefore(avatar, name);
+      }
       if (data && accessLevel >= 1 && currentUser?.id === userId) {
 profile.append(action('編輯基本資料', () => editProfile(userId, name, data)));
       }
