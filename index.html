@@ -980,19 +980,64 @@ function refreshMembership(userId) {
     return true;
   }
 
-  async function loadMemberPosts() {
+
+async function loadMemberPosts() {
     const version = ++postLoadVersion;
-    const reads = [supabaseClient.from('posts').select('id,user_id,title,body,board,created_at,comments(count)')
-      .is('hidden_at', null).order('created_at', { ascending: false }).order('id', { ascending: false })];
-    if (accessLevel >= 1) reads.push(supabaseClient.from('forum_post_actions').select('post_id,kind'));
+    const reads = [
+      supabaseClient.from('posts')
+        .select('id,user_id,title,body,board,created_at,comments(count)')
+        .is('hidden_at', null)
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+    ];
+
+    if (accessLevel >= 1) {
+      reads.push(
+        supabaseClient.from('forum_post_actions').select('post_id,kind')
+      );
+    }
+
     const [posts, actions] = await Promise.all(reads);
+
     if (version !== postLoadVersion) return;
-    if (posts.error || actions?.error) throw posts.error || actions.error;
-    memberActions = new Set(actions?.data.map(item => item.post_id + ':' + item.kind));
-    feedPosts = posts.data;
+    if (posts.error || actions?.error) {
+      throw posts.error || actions.error;
+    }
+
+    memberActions = new Set(
+      actions?.data.map(item => item.post_id + ':' + item.kind)
+    );
+
+    feedPosts = posts.data || [];
+
+    const userIds = [
+      ...new Set(feedPosts.map(post => post.user_id).filter(Boolean))
+    ];
+
+    if (userIds.length) {
+      const { data: profiles, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('id,display_name,avatar_url')
+        .in('id', userIds);
+
+      if (!profileError) {
+        const profileMap = new Map(
+          profiles.map(profile => [profile.id, profile])
+        );
+
+        feedPosts = feedPosts.map(post => ({
+          ...post,
+          authorProfile: profileMap.get(post.user_id) || null
+        }));
+      }
+    }
+
+    if (version !== postLoadVersion) return;
+
     postList.replaceChildren(...feedPosts.map(renderPost));
     filterPosts();
   }
+
 
   writeForm.addEventListener('submit', async event => {
     event.preventDefault();
