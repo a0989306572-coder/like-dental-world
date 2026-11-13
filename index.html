@@ -967,11 +967,38 @@ function refreshMembership(userId) {
         }
       }));
     }
-    article.append(element('div', boardLabel(post.board) + '・' + new Date(post.created_at).toLocaleDateString('zh-TW'), 'post-meta meta-sub'),
-      element('h2', post.title), element('p', post.body), tools);
+
+    const author = post.authorProfile;
+    const authorRow = element('div', '', 'post-author');
+
+    if (author?.avatar_url) {
+      const avatar = element('img');
+      avatar.src = author.avatar_url;
+      avatar.alt = '會員頭像';
+      avatar.width = 40;
+      avatar.height = 40;
+      avatar.style.width = '40px';
+      avatar.style.height = '40px';
+      avatar.style.objectFit = 'cover';
+      avatar.style.borderRadius = '50%';
+      authorRow.append(avatar);
+    }
+
+    authorRow.append(
+      element('span', author?.display_name || '匿名會員')
+    );
+
+    article.append(
+      authorRow,
+      element('div', boardLabel(post.board) + '・' + new Date(post.created_at).toLocaleDateString('zh-TW'), 'post-meta meta-sub'),
+      element('h2', post.title),
+      element('p', post.body),
+      tools
+    );
+
     return article;
   }
-
+   
   async function deletePost(post) {
     if (!confirm('確定永久刪除「' + post.title + '」及其留言？')) return false;
     const { data, error } = await supabaseClient.from('posts').delete().eq('id', post.id).select('id');
