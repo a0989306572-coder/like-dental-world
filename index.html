@@ -817,36 +817,68 @@
     }
   }
 
-  function refreshMembership(userId) {
+  
+function refreshMembership(userId) {
     if (membershipUserId === userId && membershipRequest) return membershipRequest;
+
     membershipUserId = userId;
     accessLevel = 0;
+    profileCompleted = false;
+
     document.getElementById('noticeBadge').hidden = true;
     document.getElementById('noticeBtn').removeAttribute('aria-label');
     memberActions = new Set();
     updateMembership();
+
     if (!userId && selectedFeed === '追蹤') {
       document.querySelector('.feed-tab[data-feed="全部"]').click();
     }
+
     membershipRequest = (async () => {
       try {
         if (userId) {
           const { data, error } = await supabaseClient.rpc('forum_access_level');
           if (error) throw error;
           if (currentUser?.id !== userId) return;
+
           accessLevel = data;
           updateMembership();
           refreshNoticeBadge();
+
+          if (accessLevel >= 1) {
+            const { data: profile, error: profileError } = await supabaseClient
+              .from('profiles')
+              .select('profile_completed_at')
+              .eq('id', userId)
+              .maybeSingle();
+
+            if (profileError) throw profileError;
+            if (currentUser?.id !== userId) return;
+
+            profileCompleted = Boolean(profile?.profile_completed_at);
+
+            if (!profileCompleted) {
+              openCompleteProfilePage();
+              return;
+            }
+          }
         }
+
         await loadMemberPosts();
+
         if (activeNav === 'profileNav') openProfilePage();
         if (activeNav === 'noticeBtn') openNotificationsPage();
+
       } catch {
-        if (currentUser?.id === userId) feedMessage.textContent = '會員或文章資料暫時無法載入，請重新整理。';
+        if (currentUser?.id === userId) {
+          feedMessage.textContent = '會員或文章資料暫時無法載入，請重新整理。';
+        }
       }
     })();
+
     return membershipRequest;
   }
+
 
   function openWriterForMember(post = null) {
     if (!requireMember()) return;
