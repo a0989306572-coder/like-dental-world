@@ -1596,12 +1596,83 @@ async function showComments(post) {
     try {
 const { data, error } = await supabaseClient
   .from('profiles')
-  .select('display_name,avatar_url,occupation,city,district,bio')
+  .select('display_name,avatar_url,occupation,city,district,bio,experience_points,level')
   .eq('id', userId)
   .maybeSingle();
+      
       if (error) throw error;
+
+      const exp = Number(data?.experience_points || 0);
+      const level = Math.min(10, Math.max(1, Number(data?.level) || 1));
+
+      const levelTitles = [
+        '新手會員',
+        '牙科新鮮人',
+        '初階會員',
+        '活躍會員',
+        '熟面孔',
+        '資深會員',
+        '核心會員',
+        '菁英會員',
+        '風雲會員',
+        '牙科大神'
+      ];
+
+      const levelThresholds = [
+        0, 50, 150, 300, 500,
+        800, 1200, 1700, 2300, 3000
+      ];
+
+      const currentThreshold = levelThresholds[level - 1];
+      const nextThreshold = levelThresholds[level] ?? null;
+
+      const progress = nextThreshold
+        ? Math.min(100, Math.max(0,
+            ((exp - currentThreshold) /
+            (nextThreshold - currentThreshold)) * 100
+          ))
+        : 100;
+
+      const levelCard = card('會員等級');
+
+      levelCard.append(
+        element('h3', `Lv.${level} ${levelTitles[level - 1]}`),
+        element('p', `${exp} EXP`, 'small-note')
+      );
+
+      if (nextThreshold !== null) {
+        levelCard.append(
+          element(
+            'p',
+            `距離 Lv.${level + 1} ${levelTitles[level]} 還差 ${Math.max(0, nextThreshold - exp)} EXP`,
+            'small-note'
+          )
+        );
+
+        const progressTrack = element('div');
+        progressTrack.style.width = '100%';
+        progressTrack.style.height = '10px';
+        progressTrack.style.background = '#e5e7eb';
+        progressTrack.style.borderRadius = '20px';
+        progressTrack.style.overflow = 'hidden';
+
+        const progressBar = element('div');
+        progressBar.style.width = `${progress}%`;
+        progressBar.style.height = '100%';
+        progressBar.style.background = '#16a34a';
+        progressBar.style.borderRadius = '20px';
+
+        progressTrack.append(progressBar);
+        levelCard.append(progressTrack);
+      } else {
+        levelCard.append(element('p', '已達最高等級！', 'small-note'));
+      }
+
+      profile.append(levelCard);
+
       if (data?.display_name) name.textContent = data.display_name;
-            if (data?.avatar_url) {
+
+      if (data?.avatar_url) {
         const avatar = element('img');
         avatar.src = data.avatar_url;
         avatar.alt = '會員頭像';
@@ -1615,9 +1686,11 @@ const { data, error } = await supabaseClient
         avatar.style.marginBottom = '12px';
         profile.insertBefore(avatar, name);
       }
+
       if (data && accessLevel >= 1 && currentUser?.id === userId) {
-profile.append(action('編輯基本資料', () => editProfile(userId, name, data)));
+        profile.append(action('編輯基本資料', () => editProfile(userId, name, data)));
       }
+
     } catch { /* The account and permission controls are still available. */ }
   }
 
