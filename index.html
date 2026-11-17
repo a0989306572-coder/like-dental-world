@@ -748,8 +748,8 @@
   let membershipUserId;
   let membershipRequest;
   let editingPost = null;
-  let memberActions = new Set();
-
+let memberActions = new Set();
+let memberCommentActions = new Set();
   function element(tag, text, className) {
     const node = document.createElement(tag);
     node.textContent = text;
@@ -1130,12 +1130,25 @@ async function showComments(post) {
 
     const { data, error } = await supabaseClient
       .from('comments')
-      .select('user_id,body,created_at')
+      .select('id,user_id,body,created_at')
       .eq('post_id', post.id)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
+    memberCommentActions = new Set();
 
+    if (accessLevel >= 1) {
+      const { data: commentActions, error: actionError } = await supabaseClient
+        .from('forum_comment_actions')
+        .select('comment_id')
+        .eq('kind', 'like');
+
+      if (actionError) throw actionError;
+
+      memberCommentActions = new Set(
+        commentActions.map(item => item.comment_id)
+      );
+    }
     if (!data.length) {
       list.append(element('p', '目前還沒有留言。'));
       return;
@@ -1160,34 +1173,73 @@ async function showComments(post) {
       }
     }
 
-    for (const comment of data) {
-      const author = profileMap.get(comment.user_id);
-      const authorRow = element('div', '', 'comment-author');
 
-      if (author?.avatar_url) {
-        const avatar = element('img');
-        avatar.src = author.avatar_url;
-        avatar.alt = '會員頭像';
-        avatar.width = 32;
-        avatar.height = 32;
-        avatar.style.width = '32px';
-        avatar.style.height = '32px';
-        avatar.style.objectFit = 'cover';
-        avatar.style.borderRadius = '50%';
-        authorRow.append(avatar);
-      }
+for (const comment of data) {
+  const author = profileMap.get(comment.user_id);
+  const authorRow = element('div', '', 'comment-author');
 
-      authorRow.append(
-        element('span', author?.display_name || '匿名會員')
-      );
-
-      list.append(
-        authorRow,
-        element('p', comment.body, 'forum-comment')
-      );
-    }
+  if (author?.avatar_url) {
+    const avatar = element('img');
+    avatar.src = author.avatar_url;
+    avatar.alt = '會員頭像';
+    avatar.width = 32;
+    avatar.height = 32;
+    avatar.style.width = '32px';
+    avatar.style.height = '32px';
+    avatar.style.objectFit = 'cover';
+    avatar.style.borderRadius = '50%';
+    authorRow.append(avatar);
   }
 
+  authorRow.append(
+    element('span', author?.display_name || '匿名會員')
+  );
+
+  const commentBody = element('p', comment.body, 'forum-comment');
+
+  list.append(authorRow, commentBody);
+
+  if (accessLevel >= 1) {
+    const selected = memberCommentActions.has(comment.id);
+
+    const likeButton = action(
+      selected ? '♥ 已按讚' : '♡ 按讚',
+      async () => {
+        const query = supabaseClient
+          .from('forum_comment_actions');
+
+        if (memberCommentActions.has(comment.id)) {
+          const { error } = await query
+            .delete()
+            .eq('comment_id', comment.id)
+            .eq('user_id', currentUser.id)
+            .eq('kind', 'like');
+
+          if (error) throw error;
+
+          memberCommentActions.delete(comment.id);
+          likeButton.textContent = '♡ 按讚';
+          likeButton.setAttribute('aria-pressed', 'false');
+        } else {
+          const { error } = await query.insert({
+            user_id: currentUser.id,
+            comment_id: comment.id,
+            kind: 'like'
+          });
+
+          if (error) throw error;
+
+          memberCommentActions.add(comment.id);
+          likeButton.textContent = '♥ 已按讚';
+          likeButton.setAttribute('aria-pressed', 'true');
+        }
+      }
+    );
+
+    likeButton.setAttribute('aria-pressed', String(selected));
+    list.append(likeButton);
+  }
+}
 
   function appendForumForm(label, buttonText, length, handler) {
     const form = element('form', '', 'dialog-form');
