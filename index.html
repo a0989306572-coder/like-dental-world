@@ -1236,12 +1236,14 @@ for (const comment of data) {
       }
     );
 
-    likeButton.setAttribute('aria-pressed', String(selected));
+        likeButton.setAttribute('aria-pressed', String(selected));
     list.append(likeButton);
   }
 }
 
-  function appendForumForm(label, buttonText, length, handler) {
+}
+
+function appendForumForm(label, buttonText, length, handler) {
     const form = element('form', '', 'dialog-form');
     const fieldLabel = element('label', label);
     const input = element('textarea', '');
