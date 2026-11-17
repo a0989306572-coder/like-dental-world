@@ -855,12 +855,19 @@ function refreshMembership(userId) {
             if (profileError) throw profileError;
             if (currentUser?.id !== userId) return;
 
-            profileCompleted = Boolean(profile?.profile_completed_at);
+                        profileCompleted = Boolean(profile?.profile_completed_at);
 
             if (!profileCompleted) {
               openCompleteProfilePage();
               return;
             }
+
+            const { data: dailyReward, error: dailyRewardError } =
+              await supabaseClient.rpc('claim_daily_login_experience');
+
+            if (dailyRewardError) throw dailyRewardError;
+
+            if (currentUser?.id !== userId) return;
           }
         }
 
