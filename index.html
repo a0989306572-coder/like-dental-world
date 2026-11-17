@@ -2096,37 +2096,105 @@ function editProfile(userId, name, profileData) {
   document.getElementById('cardsNav').addEventListener('click', openCardsPage);
   document.getElementById('messagesNav').addEventListener('click', openMessagesPage);
 
-  async function openNotificationsPage() {
-    const page = openNavPage('noticeBtn', '通知');
-    const inbox = card('我的通知');
-    page.append(inbox);
-    if (accessLevel < 1) {
-      if (!currentUser) memberPrompt(inbox, '登入後查看回覆與追蹤文章的通知。');
-      else inbox.append(element('p', '完成 Email 驗證後即可接收通知。', 'small-note'));
-      return;
+  
+async function openNotificationsPage() {
+  const page = openNavPage('noticeBtn', '通知');
+  const inbox = card('我的通知');
+  page.append(inbox);
+
+  if (accessLevel < 1) {
+    if (!currentUser) memberPrompt(inbox, '登入後查看回覆與追蹤文章的通知。');
+    else inbox.append(element('p', '完成 Email 驗證後即可接收通知。', 'small-note'));
+    return;
+  }
+
+  refreshNoticeBadge();
+
+  const { data, error } = await supabaseClient
+    .from('forum_notifications')
+    .select('id,post_id,comment_id,actor_user_id,notification_type,created_at,is_read,posts(title)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) {
+    inbox.append(element('p', '通知暫時無法載入。', 'small-note'));
+    return;
+  }
+
+  if (!data.length) {
+    inbox.append(element('p', '目前沒有通知。'));
+    return;
+  }
+
+  const actorIds = [...new Set(
+    data.map(notice => notice.actor_user_id).filter(Boolean)
+  )];
+
+  let actorMap = new Map();
+
+  if (actorIds.length) {
+    const { data: actors, error: actorError } = await supabaseClient
+      .from('profiles')
+      .select('id,display_name,avatar_url')
+      .in('id', actorIds);
+
+    if (actorError) throw actorError;
+
+    actorMap = new Map(actors.map(actor => [actor.id, actor]));
+  }
+
+  for (const notice of data) {
+    const actor = actorMap.get(notice.actor_user_id);
+    const actorName = actor?.display_name || '匿名會員';
+
+    let message = '在你的文章留言';
+
+    if (notice.notification_type === 'post_liked') {
+      message = '對你的文章按讚';
+    } else if (notice.notification_type === 'comment_liked') {
+      message = '對你的留言按讚';
     }
-    refreshNoticeBadge();
-    const { data, error } = await supabaseClient.from('forum_notifications')
-      .select('id,post_id,created_at,is_read,posts(title)').order('created_at', { ascending: false }).limit(50);
-    if (error) { inbox.append(element('p', '通知暫時無法載入。', 'small-note')); return; }
-    if (!data.length) inbox.append(element('p', '目前沒有通知。'));
-    for (const notice of data) {
-      const button = action((notice.is_read ? '' : '未讀｜') + (notice.posts?.title ?? '文章') + ' 有新留言', async () => {
-        const { error } = await supabaseClient.from('forum_notifications').update({ is_read: true }).eq('id', notice.id);
+
+    const button = action(
+      (notice.is_read ? '' : '未讀｜') +
+      (notice.posts?.title ?? '文章') +
+      '｜' +
+      actorName +
+      ' ' +
+      message,
+      async () => {
+        const { error } = await supabaseClient
+          .from('forum_notifications')
+          .update({ is_read: true })
+          .eq('id', notice.id);
+
         if (error) throw error;
+
         button.textContent = button.textContent.replace(/^未讀｜/, '');
         refreshNoticeBadge();
-        const { data: post, error: postError } = await supabaseClient.from('posts')
-          .select('id,title,body,board,created_at,user_id').eq('id', notice.post_id).maybeSingle();
+
+        const { data: post, error: postError } = await supabaseClient
+          .from('posts')
+          .select('id,title,body,board,created_at,user_id')
+          .eq('id', notice.post_id)
+          .maybeSingle();
+
         if (postError) throw postError;
-        if (post) await showComments(post);
-        else row.append(element('span', '這篇文章目前無法查看。', 'small-note'));
-      });
-      const row = element('p', '');
-      row.append(button);
-      inbox.append(row);
-    }
+
+        if (post) {
+          await showComments(post);
+        } else {
+          row.append(element('span', '這篇文章目前無法查看。', 'small-note'));
+        }
+      }
+    );
+
+    const row = element('p', '');
+    row.append(button);
+    inbox.append(row);
   }
+}
+
   document.getElementById('noticeBtn').addEventListener('click', openNotificationsPage);
 
   if (supabaseClient) {
