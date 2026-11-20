@@ -1642,11 +1642,24 @@ if (!userId) {
   memberPrompt(profile, '登入後查看個人資料、文章與會員權限。');
   return;
 }
-    const name = element('h2', '我的資料');
-    const description = element('p', labels[accessLevel], 'small-note');
-    const mine = feedPosts.filter(post => post.user_id === userId);
-    profile.append(name, description, element('p', mine.length + ' 篇文章'),
-      action('等級與解鎖', showPermissions), action('帳號與管理設定', () => loginBtn.click()));
+    const isOwnProfile = currentUser?.id === userId;
+
+const name = element('h2', '我的資料');
+const description = element('p', labels[accessLevel], 'small-note');
+const mine = feedPosts.filter(post => post.user_id === userId);
+
+profile.append(
+  name,
+  element('p', mine.length + ' 篇文章')
+);
+
+if (isOwnProfile) {
+  profile.append(
+    description,
+    action('等級與解鎖', showPermissions),
+    action('帳號與管理設定', () => loginBtn.click())
+  );
+}
     const posts = card('我的文章');
     if (mine.length) posts.append(...mine.map(post => action(post.title, () => openPost(post))));
     else posts.append(element('p', '你還沒有發表文章。', 'small-note'));
