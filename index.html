@@ -991,9 +991,12 @@ function refreshMembership(userId) {
       authorRow.append(avatar);
     }
 
-    authorRow.append(
-      element('span', author?.display_name || '匿名會員')
-    );
+   authorRow.append(
+  action(
+    author?.display_name || '匿名會員',
+    () => openProfilePage(post.user_id)
+  )
+);
 
     article.append(
       authorRow,
