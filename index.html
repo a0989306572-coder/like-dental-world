@@ -2096,7 +2096,7 @@ function editProfile(userId, name, profileData) {
     });
   });
   document.getElementById('searchNav').addEventListener('click', () => openSearchPage());
-  document.getElementById('profileNav').addEventListener('click', openProfilePage);
+  document.getElementById('profileNav').addEventListener('click', () => openProfilePage());
   document.getElementById('cardsNav').addEventListener('click', openCardsPage);
   document.getElementById('messagesNav').addEventListener('click', openMessagesPage);
 
