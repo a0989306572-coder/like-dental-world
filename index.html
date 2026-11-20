@@ -1749,7 +1749,9 @@ const { data, error } = await supabaseClient
         profile.append(action('編輯基本資料', () => editProfile(userId, name, data)));
       }
 
-    } catch { /* The account and permission controls are still available. */ }
+    } catch (error) {
+  console.error('個人頁面載入失敗：', error);
+}
   }
 
   async function openCompleteProfilePage() {
