@@ -1629,15 +1629,16 @@ function appendForumForm(label, buttonText, length, handler) {
     section.append(element('p', message, 'small-note'), action('登入／註冊', () => loginBtn.click()));
   }
 
-  async function openProfilePage() {
+  async function openProfilePage(targetUserId = currentUser?.id) {
     const page = openNavPage('profileNav', '個人');
     const profile = card();
     page.append(profile);
-    if (!currentUser) {
-      memberPrompt(profile, '登入後查看個人資料、文章與會員權限。');
-      return;
-    }
-    const userId = currentUser.id;
+    const userId = targetUserId;
+
+if (!userId) {
+  memberPrompt(profile, '登入後查看個人資料、文章與會員權限。');
+  return;
+}
     const name = element('h2', '我的資料');
     const description = element('p', labels[accessLevel], 'small-note');
     const mine = feedPosts.filter(post => post.user_id === userId);
