@@ -395,6 +395,91 @@
       .post h2 { font-size: 15px; }
       .feed-tabs { gap: 20px; }
     }
+
+    /* Shared forum surfaces */
+    :root {
+      --blue: #256fce;
+      --blue-light: #edf5ff;
+      --ink: #182b44;
+      --muted: #63748a;
+      --line: #e0e8f2;
+      --bg: #f0f5fc;
+    }
+    .layout > * { min-width: 0; }
+    .topbar { background: rgb(255 255 255 / 94%); backdrop-filter: blur(12px); }
+    .search { border-color: var(--line); background: #f5f8fc; }
+    button, a, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid #71aaf0; outline-offset: 3px; }
+    .btn { min-height: 40px; transition: background .16s, box-shadow .16s; }
+    .btn:disabled { cursor: wait; opacity: .65; }
+    .btn-light:hover { background: #deecff; }
+    .hero { background: linear-gradient(120deg, #153d73, #286dc6); padding: 25px; gap: 14px; }
+    .hero h1 { font-size: clamp(21px, 2vw, 27px); line-height: 1.4; }
+    .hero-tag { white-space: normal; line-height: 1.6; font-size: 12px; max-width: 140px; }
+    .sidebar { scrollbar-width: thin; }
+    .sidebar-brand strong { white-space: nowrap; font-size: 19px; }
+    .sidebar-write { min-height: 46px; box-shadow: 0 5px 14px rgb(43 130 232 / 15%); }
+    .panel, .nav-card { border-color: var(--line); box-shadow: 0 3px 12px rgb(28 60 101 / 3%); }
+    .right-col .panel-title { font-size: 14px; }
+    .right-col .rule { border-radius: 11px; }
+    #homeView > .panel { background: transparent; border: 0; box-shadow: none; overflow: visible; }
+    .feed-tabs { gap: 0; padding: 0; border: 1px solid var(--line); border-radius: 14px 14px 0 0; overflow: hidden; }
+    .feed-tab { flex: 1; min-height: 51px; }
+    .feed-head { border: 1px solid var(--line); border-top: 0; border-radius: 0 0 14px 14px; margin-bottom: 12px; }
+    #feedMessage:not(:empty) { padding: 12px 15px; background: #fff; border-radius: 12px; margin-bottom: 12px; }
+    .post { border: 1px solid var(--line); border-radius: 15px; margin-bottom: 12px; padding: 20px; box-shadow: 0 3px 12px rgb(28 60 101 / 3%); }
+    .post:last-child { border-bottom: 1px solid var(--line); }
+    .post:hover { background: #fff; border-color: #bdd2ef; }
+    .post h2 { font-size: 18px; line-height: 1.6; margin: 12px 0 8px; }
+    .post p { color: #495c73; line-height: 1.9; margin: 8px 0 15px; }
+    .post-author { display: flex; align-items: center; gap: 9px; min-height: 40px; }
+    .post-author > .btn { background: transparent; color: var(--ink); padding: 5px 0; text-align: left; }
+    .post-author > .btn:hover { color: var(--blue); }
+    .author-initial { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #e5f0ff; color: var(--blue); font-weight: 750; flex: none; }
+    .post .meta-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .post-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 12px; border-top: 1px solid #edf1f7; }
+    .post-actions .btn { font-size: 12px; padding: 7px 10px; min-height: 34px; }
+    .empty { border: 1px dashed #ccdbee; border-radius: 14px; padding: 38px 20px; line-height: 1.8; }
+    .board-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .board-tile { display: flex; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--line); border-radius: 12px; padding: 13px; background: #fafcff; color: var(--ink); min-height: 76px; }
+    .board-tile:hover { border-color: #9cc3f4; background: #f0f6ff; }
+    .board-tile-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: #e7f0fe; color: var(--blue); font-weight: 800; font-size: 17px; flex: none; }
+    .board-tile-copy { display: grid; gap: 4px; min-width: 0; }
+    .board-tile-copy strong { line-height: 1.5; font-size: 14px; overflow-wrap: anywhere; }
+    .board-tile-copy small { color: var(--muted); font-size: 11px; font-weight: 400; }
+    .nav-details { padding: 17px; }
+    .nav-details summary { line-height: 1.6; }
+    .nav-page > h1 { font-size: 25px; margin-bottom: 18px; }
+    .nav-search { padding: 12px; }
+    .nav-history-row > .btn:first-child { text-align: left; overflow-wrap: anywhere; min-width: 0; }
+    .profile-overview > img { border: 4px solid white; box-shadow: 0 0 0 1px var(--line); }
+    .profile-overview > h2 { font-size: 23px; margin-top: 4px; }
+    .profile-overview > .nav-card { background: #f4f8ff; box-shadow: none; margin-top: 20px; }
+    .site-dialog { box-shadow: 0 22px 70px rgb(18 40 72 / 25%); }
+    .dialog-form input, .dialog-form textarea, .dialog-form select { background: #fbfcfe; min-height: 44px; }
+    .dialog-message:not(:empty) { line-height: 1.8; padding-top: 10px; }
+    @media (max-width: 650px) {
+      .sidebar-nav { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+      .sidebar { padding: 4px 0 12px; }
+      .sidebar-item { min-height: 57px; font-size: 11px; border-radius: 10px; }
+      .sidebar-item svg { width: 20px; height: 20px; }
+      .sidebar-brand { display: none; }
+      .sidebar-write { min-height: 42px; font-size: 14px; margin-top: 8px; }
+      .topbar .nav { gap: 8px; }
+      .hero { padding: 20px; margin-bottom: 15px; }
+      .post { padding: 16px; }
+      .post h2 { font-size: 17px; }
+      .nav-search { flex-wrap: wrap; }
+      .nav-search .search { order: 0; flex-basis: auto; flex: 1; }
+      .nav-search > .btn { flex: none; }
+      .board-card-grid { gap: 7px; }
+      .board-tile { padding: 10px; gap: 7px; }
+      .board-tile-icon { width: 30px; height: 30px; font-size: 14px; }
+      .board-tile-copy strong { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -989,6 +1074,10 @@ function refreshMembership(userId) {
       avatar.style.objectFit = 'cover';
       avatar.style.borderRadius = '50%';
       authorRow.append(avatar);
+    } else {
+      const initial = element('span', [...(author?.display_name || '會員')][0], 'author-initial');
+      initial.setAttribute('aria-hidden', 'true');
+      authorRow.append(initial);
     }
 
    authorRow.append(
@@ -1509,8 +1598,20 @@ function appendForumForm(label, buttonText, length, handler) {
   }
 
   function boardOptions(keys) {
-    const list = element('div', '', 'nav-chip-list');
-    for (const key of keys) list.append(action(boardLabel(key), () => openBoard(key)));
+    const list = element('div', '', 'board-card-grid');
+    const counts = new Map();
+    for (const post of feedPosts) counts.set(post.board, (counts.get(post.board) ?? 0) + 1);
+    for (const key of keys) {
+      const label = boardLabel(key);
+      const tile = action('', () => openBoard(key));
+      tile.className = 'board-tile';
+      const icon = element('span', [...label][0], 'board-tile-icon');
+      icon.setAttribute('aria-hidden', 'true');
+      const copy = element('span', '', 'board-tile-copy');
+      copy.append(element('strong', label), element('small', (counts.get(key) ?? 0) + ' 篇文章'));
+      tile.append(icon, copy);
+      list.append(tile);
+    }
     if (!keys.length) list.append(element('p', '目前沒有看板。', 'small-note'));
     return list;
   }
@@ -1635,6 +1736,7 @@ function appendForumForm(label, buttonText, length, handler) {
   async function openProfilePage(targetUserId = currentUser?.id) {
     const page = openNavPage('profileNav', '個人');
     const profile = card();
+    profile.classList.add('profile-overview');
     page.append(profile);
     const userId = targetUserId;
 
@@ -1660,9 +1762,9 @@ if (isOwnProfile) {
     action('帳號與管理設定', () => loginBtn.click())
   );
 }
-    const posts = card('我的文章');
+    const posts = card(isOwnProfile ? '我的文章' : '公開文章');
     if (mine.length) posts.append(...mine.map(post => action(post.title, () => openPost(post))));
-    else posts.append(element('p', '你還沒有發表文章。', 'small-note'));
+    else posts.append(element('p', isOwnProfile ? '你還沒有發表文章。' : '目前沒有公開文章。', 'small-note'));
     page.append(posts);
     try {
 const { data, error } = await supabaseClient
