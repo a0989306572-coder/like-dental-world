@@ -510,6 +510,19 @@
     .draw-person h3 { font-size: 20px; margin: 12px 0 7px; }
     .draw-bio { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; }
     .draw-setting { color: var(--accent-text); font-weight: 750; }
+
+    .dm-conversation { display: grid; gap: 7px; width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 10px; background: var(--surface-inset); color: var(--ink); text-align: left; }
+    .dm-conversation:hover { border-color: var(--blue); }
+    .dm-conversation-head { display: flex; justify-content: space-between; gap: 12px; }
+    .dm-preview { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .dm-unread { color: var(--accent-text); font-weight: 750; }
+    .dm-messages { max-height: 420px; min-height: 120px; overflow-y: auto; padding: 10px 2px; overscroll-behavior: contain; }
+    .dm-message { width: fit-content; max-width: 85%; margin: 10px 0; border: 1px solid var(--line); border-radius: 13px; padding: 10px 13px; background: var(--surface-inset); }
+    .dm-mine { margin-left: auto; background: var(--accent-soft); }
+    .dm-message p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 5px; line-height: 1.7; }
+    .dm-message time { display: block; font-size: 11px; }
+    .dm-compose { border-top: 1px solid var(--line); padding-top: 13px; margin-top: 10px; }
+    .dm-compose textarea { width: 100%; min-width: 0; }
   </style>
 </head>
 <body>
@@ -540,7 +553,7 @@
           <button type="button" class="sidebar-item" id="searchNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>搜尋</span></button>
           <button type="button" class="sidebar-item" id="profileNav" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>個人</span></button>
           <button type="button" class="sidebar-item" id="noticeBtn" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 10h18c0-2-3-3-3-10m-8 13a2 2 0 0 0 4 0"/></svg><span>通知</span><span class="sidebar-badge" id="noticeBadge" hidden></span></button>
-          <button type="button" class="sidebar-item" id="messagesNav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a9 9 0 0 1-9 9 9.4 9.4 0 0 1-4-.9L3 21l1.4-4.5a9 9 0 1 1 16.6-5z"/></svg><span>私訊</span></button>
+          <button type="button" class="sidebar-item" id="messagesNav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a9 9 0 0 1-9 9 9.4 9.4 0 0 1-4-.9L3 21l1.4-4.5a9 9 0 1 1 16.6-5z"/></svg><span>私訊</span><span class="sidebar-badge" id="messageBadge" hidden></span></button>
         </nav>
         <button type="button" class="btn sidebar-write" id="writeBtn">＋ 發文</button>
       </aside>
@@ -937,6 +950,14 @@ function refreshMembership(userId) {
     if (membershipUserId === userId && membershipRequest) return membershipRequest;
 
     membershipUserId = userId;
+    dmBadgeVersion++;
+    document.getElementById('messageBadge').hidden = true;
+    document.getElementById('messagesNav').removeAttribute('aria-label');
+    if (activeNav === 'messagesNav') {
+      dmPageVersion++;
+      dmRefresh = null;
+      navPage.replaceChildren(element('p', '正在更新會員狀態…', 'small-note'));
+    }
     if (activeNav === 'cardsNav') {
       cardPageVersion++;
       navPage.replaceChildren(element('p', '正在更新會員狀態…', 'small-note'));
@@ -963,6 +984,7 @@ function refreshMembership(userId) {
           accessLevel = data;
           updateMembership();
           refreshNoticeBadge();
+          refreshDmBadge();
 
           if (accessLevel >= 1) {
             const { data: profile, error: profileError } = await supabaseClient
@@ -994,6 +1016,7 @@ function refreshMembership(userId) {
 
         if (activeNav === 'profileNav') openProfilePage();
         if (activeNav === 'cardsNav') openCardsPage();
+        if (activeNav === 'messagesNav') openMessagesPage(dmPairId);
         if (activeNav === 'noticeBtn') openNotificationsPage();
 
       } catch {
@@ -2324,7 +2347,8 @@ function editProfile(userId, name, profileData) {
     section.append(renderPerson(pair.person));
     const controls = element('div', '', 'dialog-actions');
     if (pair.matched_at) {
-      section.append(element('p', '你們都選擇了想認識，已成為卡友。私訊功能尚未開放。', 'small-note'));
+      section.append(element('p', '你們都選擇了想認識，已成為卡友，可以傳送私訊。', 'small-note'));
+      controls.append(action('傳送私訊', () => openMessagesPage(pair.id)));
       controls.append(action('解除卡友', () => {
         if (confirm('確定解除這段卡友關係？')) return performCardAction('end_friend', pair.id);
       }));
@@ -2406,12 +2430,226 @@ function editProfile(userId, name, profileData) {
     page.append(rules);
   }
 
-  function openMessagesPage() {
-    const page = openNavPage('messagesNav', '私訊');
-    const inbox = card('私訊收件匣');
-    inbox.append(element('p', '私訊與私訊邀請尚未開放。', 'small-note'));
-    page.append(inbox);
+
+  let dmPageVersion = 0;
+  let dmPairId = null;
+  let dmRefresh = null;
+  let dmBadgeVersion = 0;
+
+  async function dmCall(actionName, params = {}) {
+    const { data, error } = await supabaseClient.rpc('forum_direct_chat', { action_name: actionName, ...params });
+    if (error) throw error;
+    return data;
   }
+
+  function dmWhen(value) {
+    return value ? new Date(value).toLocaleString('zh-TW', {
+      timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+    }) : '';
+  }
+
+  function updateDmBadge(data) {
+    const count = data.conversations.reduce((sum, item) => sum + Number(item.unread || 0), 0);
+    const badge = document.getElementById('messageBadge');
+    badge.hidden = !count;
+    badge.textContent = count > 99 ? '99+' : String(count);
+    document.getElementById('messagesNav').setAttribute('aria-label', count ? '私訊，' + count + ' 則未讀' : '私訊');
+  }
+
+  async function refreshDmBadge() {
+    if (!currentUser || accessLevel < 1) return;
+    const userId = currentUser.id;
+    const version = ++dmBadgeVersion;
+    try {
+      const data = await dmCall('inbox');
+      if (currentUser?.id !== userId || version !== dmBadgeVersion) return;
+      updateDmBadge(data);
+    } catch { /* The unread badge does not block navigation. */ }
+  }
+
+  async function openMessagesPage(pairId = null) {
+    const version = ++dmPageVersion;
+    dmPairId = pairId;
+    dmRefresh = null;
+    const page = openNavPage('messagesNav', '私訊');
+    if (!currentUser || accessLevel < 1) {
+      memberPrompt(page, '登入並完成 Email 驗證後，可與已配對的卡友聊天。');
+      return;
+    }
+    const userId = currentUser.id;
+    const status = page.querySelector('[role="status"]');
+    const isCurrent = () => version === dmPageVersion && activeNav === 'messagesNav' && currentUser?.id === userId;
+    const toolbar = element('div', '', 'dialog-actions');
+    const refresh = action('重新整理', () => dmRefresh?.());
+    toolbar.append(action('私訊收件匣', () => openMessagesPage()), refresh);
+    page.append(toolbar);
+
+    if (!pairId) {
+      const inbox = card('我的對話');
+      page.append(inbox);
+      let loading = false;
+      dmRefresh = async () => {
+        if (loading || !isCurrent()) return;
+        loading = true;
+        try {
+          const data = await dmCall('inbox');
+          if (!isCurrent()) return;
+          updateDmBadge(data);
+          inbox.replaceChildren(element('h2', '我的對話'));
+          if (!data.conversations.length) {
+            inbox.append(element('p', '還沒有卡友對話。到「抽卡」互選想認識，成為卡友後即可私訊。', 'small-note'),
+              action('前往抽卡', openCardsPage));
+          }
+          for (const item of data.conversations) {
+            const button = action('', () => openMessagesPage(item.pair_id));
+            button.className = 'dm-conversation';
+            const header = element('span', '', 'dm-conversation-head');
+            header.append(element('strong', item.name || '卡友'),
+              element('small', item.unread ? item.unread + ' 則未讀' : dmWhen(item.last_at), item.unread ? 'dm-unread' : 'small-note'));
+            button.append(header,
+              element('span', item.last_body || '你們已成為卡友，來打個招呼吧。', 'dm-preview'));
+            if (!item.active) button.append(element('small', '已停止聊天，可查看歷史訊息', 'small-note'));
+            inbox.append(button);
+          }
+          status.textContent = '';
+        } catch {
+          if (isCurrent()) status.textContent = '無法載入對話，請重新整理。';
+        } finally { loading = false; }
+      };
+      await dmRefresh();
+      return;
+    }
+
+    const conversation = card('載入對話中…');
+    const title = element('h2', '');
+    const availability = element('p', '', 'small-note');
+    const older = action('載入較早訊息', () => loadMessages(true));
+    older.hidden = true;
+    const list = element('div', '', 'dm-messages');
+    list.setAttribute('role', 'log');
+    list.setAttribute('aria-label', '對話訊息');
+    list.setAttribute('aria-live', 'polite');
+    const form = element('form', '', 'dialog-form dm-compose');
+    const label = element('label', '訊息');
+    const input = element('textarea', '');
+    input.rows = 3;
+    input.maxLength = 2000;
+    input.required = true;
+    input.placeholder = '輸入訊息，最多 2000 字';
+    label.append(input);
+    const send = element('button', '傳送', 'btn btn-primary');
+    send.type = 'submit';
+    form.append(label, send);
+    conversation.replaceChildren(title, availability, older, list, form);
+    page.append(conversation);
+    const cache = new Map();
+    let active = false;
+    let oldest = null;
+    let loading = false;
+    let firstLoad = true;
+    let pending = null;
+    let sending = false;
+    let markedThrough = 0n;
+    let markingRead = false;
+
+    async function markRead() {
+      if (!isCurrent() || document.hidden || list.scrollHeight-list.scrollTop-list.clientHeight > 32 || !cache.size) return;
+      const latest = [...cache.values()].reduce((a, b) => BigInt(a.seq)>BigInt(b.seq) ? a : b);
+      if (markingRead || BigInt(latest.seq) <= markedThrough) return;
+      markingRead = true;
+      try {
+        await dmCall('read', { pair_id: pairId, through_seq: latest.seq });
+        markedThrough = BigInt(latest.seq);
+        if (isCurrent()) refreshDmBadge();
+      } catch { /* A later refresh retries marking the rendered messages as read. */ }
+      finally { markingRead = false; }
+    }
+    list.addEventListener('scroll', markRead);
+
+    async function loadMessages(loadOlder = false) {
+      if (loading || !isCurrent()) return;
+      loading = true;
+      const priorHeight = list.scrollHeight;
+      const nearBottom = firstLoad || list.scrollHeight-list.scrollTop-list.clientHeight <= 32;
+      try {
+        const data = await dmCall('history', { pair_id: pairId, before_seq: loadOlder ? oldest : null });
+        if (!isCurrent()) return;
+        title.textContent = data.name || '卡友';
+        active = data.active;
+        availability.textContent = active ? '僅你與這位卡友可查看對話。訊息每 10 秒更新，可按重新整理立即查看。'
+          : '卡友關係已結束或遭封鎖，目前僅能查看歷史訊息。';
+        input.disabled = !active;
+        send.disabled = !active || sending;
+        let changed = false;
+        for (const message of data.messages) {
+          if (!cache.has(message.id)) changed = true;
+          cache.set(message.id, message);
+        }
+        const messages = [...cache.values()].sort((a,b) => BigInt(a.seq)<BigInt(b.seq) ? -1 : 1);
+        oldest = messages[0]?.seq ?? null;
+        if (firstLoad || loadOlder) older.hidden = data.messages.length < 50;
+        if (changed || firstLoad) {
+          list.replaceChildren();
+          if (!messages.length) list.append(element('p', '還沒有訊息，來向卡友打個招呼吧。', 'small-note'));
+          for (const message of messages) {
+            const row = element('div', '', message.mine ? 'dm-message dm-mine' : 'dm-message');
+            row.append(element('p', message.body), element('time', dmWhen(message.created_at), 'small-note'));
+            list.append(row);
+          }
+          if (loadOlder) list.scrollTop += list.scrollHeight-priorHeight;
+          else if (nearBottom) list.scrollTop = list.scrollHeight;
+        }
+        firstLoad = false;
+        if (!sending) status.textContent = '';
+        await markRead();
+      } catch (error) {
+        if (isCurrent()) {
+          status.textContent = error.code === '42501' ? '無法存取這段對話。' : '對話更新失敗，請重新整理。';
+          if (firstLoad || error.code === '42501') { input.disabled = true; send.disabled = true; }
+        }
+      } finally { loading = false; }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const body = input.value.trim();
+      if (!isCurrent() || !active || sending || !body) return;
+      if (!pending || pending.body !== body) pending = { body, request_id: crypto.randomUUID() };
+      const outgoing = pending;
+      sending = true;
+      send.disabled = true;
+      input.disabled = true;
+      status.textContent = '傳送中…';
+      try {
+        await dmCall('send', { pair_id: pairId, ...outgoing });
+        pending = null;
+        if (input.value.trim() === outgoing.body) input.value = '';
+        if (isCurrent()) {
+          status.textContent = '訊息已傳送。';
+          await loadMessages();
+        }
+      } catch (error) {
+        if (isCurrent()) {
+          status.textContent = error.code === '42501' ? '這段對話目前無法傳送新訊息。'
+            : error.code === '22023' ? error.message : '無法確認是否已傳送，保留內容後再按傳送可安全重試。';
+          if (error.code === '42501') active = false;
+        }
+      } finally {
+        sending = false;
+        input.disabled = !active;
+        send.disabled = !active;
+      }
+    });
+    dmRefresh = loadMessages;
+    await loadMessages();
+  }
+
+  // Only refresh while the tab is visible and the member is signed in.
+  setInterval(() => {
+    if (document.hidden || !currentUser || accessLevel < 1) return;
+    if (activeNav === 'messagesNav') dmRefresh?.();
+    else refreshDmBadge();
+  }, 10000);
 
   document.getElementById('boardsNav').addEventListener('click', () => {
     openBoardsPage();
@@ -2422,7 +2660,7 @@ function editProfile(userId, name, profileData) {
   document.getElementById('searchNav').addEventListener('click', () => openSearchPage());
   document.getElementById('profileNav').addEventListener('click', () => openProfilePage());
   document.getElementById('cardsNav').addEventListener('click', openCardsPage);
-  document.getElementById('messagesNav').addEventListener('click', openMessagesPage);
+  document.getElementById('messagesNav').addEventListener('click', () => openMessagesPage());
 
   
 async function openNotificationsPage() {
