@@ -2254,7 +2254,7 @@ function editProfile(userId, name, profileData) {
     const version = ++cardPageVersion;
     const page = openNavPage('cardsNav', '抽卡');
     const intro = card('認識牙科圈的新朋友');
-    intro.append(element('p', '不限感情狀態與性別，以牙科同行交流為主。台灣時間每天 00:00、12:00 各有一次配對機會。', 'small-note'));
+    intro.append(element('p', '不限感情狀態與性別，以牙科同行交流為主。每天可在任意時間抽一次，以台灣日期計算；今天抽過後，隔天即可再抽。', 'small-note'));
     page.append(intro);
     if (!currentUser) {
       memberPrompt(intro, '登入並完成會員資料後，即可選擇加入。');
@@ -2316,7 +2316,7 @@ function editProfile(userId, name, profileData) {
   }
 
   function renderDrawCard(pair, participating) {
-    const section = card(pair.matched_at ? '卡友' : pair.current ? '本時段的卡片' : '待回應的卡片');
+    const section = card(pair.matched_at ? '卡友' : pair.current ? '今天的卡片' : '待回應的卡片');
     if (!pair.person || !pair.available) {
       section.append(element('p', '這張卡片目前無法互動。對方可能已略過或暫停參加。', 'small-note'));
       return section;
@@ -2336,7 +2336,7 @@ function editProfile(userId, name, profileData) {
         const yes = action('想認識', () => performCardAction('respond_yes', pair.id));
         yes.className = 'btn btn-primary';
         controls.append(yes, action('略過', () => {
-          if (confirm('確定略過這張卡片？本時段不會另抽一位。')) return performCardAction('respond_skip', pair.id);
+          if (confirm('確定略過這張卡片？今天不會另抽一位。')) return performCardAction('respond_skip', pair.id);
         }));
       }
     }
@@ -2350,7 +2350,7 @@ function editProfile(userId, name, profileData) {
   async function renderCardsPage(page, data, version, userId) {
     const settings = card('抽卡設定');
     settings.append(element('p', data.enabled ? '目前正在參加' : '目前尚未參加', 'draw-setting'));
-    settings.append(element('p', '下個時段｜' + cardDate(data.next_at) + '（台灣時間）', 'small-note'));
+    settings.append(element('p', '下次可抽日期｜' + new Date(data.next_at).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' }) + '（台灣時間）', 'small-note'));
     settings.append(action('重新整理', openCardsPage));
     page.append(settings);
 
@@ -2381,8 +2381,8 @@ function editProfile(userId, name, profileData) {
     const friends = data.cards.filter(pair => pair.matched_at);
     if (data.enabled) {
       if (!pending.some(pair => pair.current)) {
-        const waiting = card('本時段等待配對');
-        waiting.append(element('p', '目前沒有可配對的會員。請邀請另一位已完成資料的會員加入，再按「重新整理」。每位會員同一時段最多配對一人。', 'small-note'));
+        const waiting = card('今天等待配對');
+        waiting.append(element('p', '目前沒有可配對的會員。請邀請另一位已完成資料的會員加入，再按「重新整理」。每天最多抽到一位，尚未抽到時可稍後重試。', 'small-note'));
         page.append(waiting);
       }
       for (const pair of pending) page.append(renderDrawCard(pair, data.enabled));
@@ -2401,7 +2401,7 @@ function editProfile(userId, name, profileData) {
     if (data.blocks.length) blocks.append(element('p', '解除封鎖後，原有邀請與卡友關係仍維持結束。', 'small-note'));
     page.append(blocks);
     const rules = card('配對規則');
-    rules.append(element('p', '參加需驗證 Email 並完成個人資料。每個時段配對一位，雙方會互相看見卡片；同一時段重新整理不會換人。邀請保留 7 天，雙方同意才成為卡友。', 'small-note'),
+    rules.append(element('p', '參加需驗證 Email 並完成個人資料。每天可在任意時間配對一位，雙方會互相看見卡片；當天重新整理不會換人，略過也不會增加次數。每天以台灣時間的日期重新計算，無需在特定時間上線。邀請保留 7 天，雙方同意才成為卡友。', 'small-note'),
       element('p', '已封鎖、仍是卡友、邀請尚在進行，或最近 7 天配對過的會員，不會再次配對。參加人數不足時可能無法取得卡片。', 'small-note'));
     page.append(rules);
   }
