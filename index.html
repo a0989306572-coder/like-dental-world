@@ -523,6 +523,59 @@
     .dm-message time { display: block; font-size: 11px; }
     .dm-compose { border-top: 1px solid var(--line); padding-top: 13px; margin-top: 10px; }
     .dm-compose textarea { width: 100%; min-width: 0; }
+
+    .dm-avatar { position: relative; display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); overflow: hidden; flex: none; vertical-align: middle; }
+    .dm-avatar-initial { font-size: 18px; font-weight: 750; }
+    .dm-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .dm-avatar-small { width: 32px; height: 32px; }
+    .dm-avatar-small .dm-avatar-initial { font-size: 13px; }
+    .dm-inbox { padding: 8px; }
+    .dm-inbox > h2 { padding: 10px 10px 6px; }
+    .dm-inbox > p { padding: 10px; }
+    .dm-conversation { display: flex; align-items: center; gap: 12px; padding: 14px 10px; margin: 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+    .dm-conversation:last-child { border-bottom: 0; }
+    .dm-conversation:hover { background: var(--surface-hover); border-radius: 10px; }
+    .dm-conversation-copy { display: grid; flex: 1; gap: 7px; min-width: 0; }
+    .dm-conversation-head { align-items: center; gap: 10px; }
+    .dm-conversation-head strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+    .dm-list-time { color: var(--muted); font-size: 11px; flex: none; }
+    .dm-conversation-preview { display: flex; align-items: center; gap: 10px; }
+    .dm-preview { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+    .dm-unread { min-width: 20px; padding: 3px 6px; border-radius: 99px; text-align: center; background: var(--blue); color: #0e203b; font-size: 11px; line-height: 1.2; flex: none; }
+    .dm-chat { padding: 0; overflow: hidden; }
+    .dm-chat-header { display: flex; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .dm-back { border: 0; border-radius: 8px; background: transparent; color: var(--ink); padding: 0; width: 28px; min-height: 44px; flex: none; font-size: 32px; line-height: 1; }
+    .dm-back:hover { background: var(--surface-hover); }
+    .dm-chat-identity { flex: 1; min-width: 0; }
+    .dm-chat-identity h2 { font-size: 17px; margin: 0 0 4px; overflow-wrap: anywhere; }
+    .dm-chat-identity p { font-size: 11px; margin: 0; }
+    .dm-refresh { font-size: 11px; padding: 7px 9px; flex: none; }
+    .dm-chat > .btn { margin: 8px 14px; }
+    .dm-messages { height: clamp(240px, 45dvh, 520px); min-height: 200px; max-height: none; padding: 16px; background: var(--surface-inset); scrollbar-width: thin; }
+    .dm-message { display: flex; align-items: flex-start; gap: 8px; width: 100%; max-width: none; margin: 14px 0; border: 0; border-radius: 0; padding: 0; background: transparent; }
+    .dm-mine { justify-content: flex-end; margin-left: 0; }
+    .dm-message-content { display: flex; flex-direction: column; align-items: flex-start; max-width: calc(100% - 48px); min-width: 0; gap: 4px; }
+    .dm-mine .dm-message-content { align-items: flex-end; }
+    .dm-sender-name { font-size: 11px; color: var(--muted); padding-left: 2px; overflow-wrap: anywhere; }
+    .dm-message p.dm-bubble { border: 1px solid var(--line); border-radius: 4px 15px 15px; margin: 0; padding: 10px 13px; background: var(--surface); color: var(--ink); line-height: 1.7; }
+    .dm-mine p.dm-bubble { background: #29476b; border-color: #3c5f8c; border-radius: 15px 4px 15px 15px; }
+    .dm-message-time { color: var(--muted); font-size: 10px; padding: 0 2px; }
+    .dm-day-divider { text-align: center; color: var(--muted); font-size: 11px; margin: 8px 0 20px; }
+    .dm-compose { display: flex; align-items: flex-end; gap: 10px; padding: 13px; margin: 0; background: var(--surface); }
+    .dm-compose > label { flex: 1; min-width: 0; font-size: 11px; color: var(--muted); }
+    .dm-compose textarea { border-radius: 13px; min-height: 60px; max-height: 160px; resize: vertical; font-size: 14px; line-height: 1.5; }
+    .dm-compose > button { flex: none; border-radius: 13px; min-height: 44px; }
+    @media (max-width: 650px) {
+      .dm-chat-header { padding: 10px 8px; gap: 7px; }
+      .dm-chat-header .dm-avatar { width: 38px; height: 38px; }
+      .dm-refresh { padding: 7px; font-size: 10px; }
+      .dm-chat-identity h2 { font-size: 15px; }
+      .dm-chat-identity p { font-size: 10px; }
+      .dm-list-time { font-size: 10px; }
+      .dm-messages { padding: 12px; height: clamp(220px, 42dvh, 420px); }
+      .dm-compose { padding: 10px; gap: 7px; }
+      .dm-conversation { gap: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -2448,6 +2501,35 @@ function editProfile(userId, name, profileData) {
     }) : '';
   }
 
+
+  function dmAvatar(name, url, small = false) {
+    const avatar = element('span', '', small ? 'dm-avatar dm-avatar-small' : 'dm-avatar');
+    avatar.setAttribute('aria-hidden', 'true');
+    avatar.append(element('span', [...(name || '卡友')][0], 'dm-avatar-initial'));
+    if (/^https?:\/\//i.test(url || '')) {
+      const image = element('img', '');
+      image.src = url;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.referrerPolicy = 'no-referrer';
+      image.addEventListener('error', () => image.remove());
+      avatar.append(image);
+    }
+    return avatar;
+  }
+
+  function dmClock(value) {
+    return new Date(value).toLocaleTimeString('zh-TW', {
+      timeZone: 'Asia/Taipei', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+  }
+
+  function dmDay(value) {
+    return new Date(value).toLocaleDateString('zh-TW', {
+      timeZone: 'Asia/Taipei', year: 'numeric', month: 'numeric', day: 'numeric'
+    });
+  }
+
   function updateDmBadge(data) {
     const count = data.conversations.reduce((sum, item) => sum + Number(item.unread || 0), 0);
     const badge = document.getElementById('messageBadge');
@@ -2482,10 +2564,10 @@ function editProfile(userId, name, profileData) {
     const toolbar = element('div', '', 'dialog-actions');
     const refresh = action('重新整理', () => dmRefresh?.());
     toolbar.append(action('私訊收件匣', () => openMessagesPage()), refresh);
-    page.append(toolbar);
-
     if (!pairId) {
+      page.append(toolbar);
       const inbox = card('我的對話');
+      inbox.classList.add('dm-inbox');
       page.append(inbox);
       let loading = false;
       dmRefresh = async () => {
@@ -2503,12 +2585,20 @@ function editProfile(userId, name, profileData) {
           for (const item of data.conversations) {
             const button = action('', () => openMessagesPage(item.pair_id));
             button.className = 'dm-conversation';
+            const copy = element('span', '', 'dm-conversation-copy');
             const header = element('span', '', 'dm-conversation-head');
             header.append(element('strong', item.name || '卡友'),
-              element('small', item.unread ? item.unread + ' 則未讀' : dmWhen(item.last_at), item.unread ? 'dm-unread' : 'small-note'));
-            button.append(header,
-              element('span', item.last_body || '你們已成為卡友，來打個招呼吧。', 'dm-preview'));
-            if (!item.active) button.append(element('small', '已停止聊天，可查看歷史訊息', 'small-note'));
+              element('time', dmWhen(item.last_at || item.matched_at), 'dm-list-time'));
+            const preview = element('span', '', 'dm-conversation-preview');
+            preview.append(element('span', item.last_body || '你們已成為卡友，來打個招呼吧。', 'dm-preview'));
+            if (item.unread) {
+              const badge = element('span', Number(item.unread) > 99 ? '99+' : String(item.unread), 'dm-unread');
+              badge.setAttribute('aria-label', item.unread + ' 則未讀');
+              preview.append(badge);
+            }
+            copy.append(header, preview);
+            if (!item.active) copy.append(element('small', '已停止聊天', 'small-note'));
+            button.append(dmAvatar(item.name, item.avatar_url), copy);
             inbox.append(button);
           }
           status.textContent = '';
@@ -2520,9 +2610,20 @@ function editProfile(userId, name, profileData) {
       return;
     }
 
-    const conversation = card('載入對話中…');
-    const title = element('h2', '');
+    const conversation = card();
+    conversation.classList.add('dm-chat');
+    const header = element('div', '', 'dm-chat-header');
+    const back = action('‹', () => openMessagesPage());
+    back.className = 'dm-back';
+    back.setAttribute('aria-label', '返回對話列表');
+    const peerAvatar = element('span', '', 'dm-peer-avatar');
+    peerAvatar.append(dmAvatar('卡友', null));
+    const identity = element('div', '', 'dm-chat-identity');
+    const title = element('h2', '載入對話中…');
     const availability = element('p', '', 'small-note');
+    identity.append(title, availability);
+    refresh.classList.add('dm-refresh');
+    header.append(back, peerAvatar, identity, refresh);
     const older = action('載入較早訊息', () => loadMessages(true));
     older.hidden = true;
     const list = element('div', '', 'dm-messages');
@@ -2540,7 +2641,7 @@ function editProfile(userId, name, profileData) {
     const send = element('button', '傳送', 'btn btn-primary');
     send.type = 'submit';
     form.append(label, send);
-    conversation.replaceChildren(title, availability, older, list, form);
+    conversation.replaceChildren(header, older, list, form);
     page.append(conversation);
     const cache = new Map();
     let active = false;
@@ -2551,6 +2652,9 @@ function editProfile(userId, name, profileData) {
     let sending = false;
     let markedThrough = 0n;
     let markingRead = false;
+    let peerIdentity = '';
+    let peerName = '卡友';
+    let peerAvatarUrl = null;
 
     async function markRead() {
       if (!isCurrent() || document.hidden || list.scrollHeight-list.scrollTop-list.clientHeight > 32 || !cache.size) return;
@@ -2575,9 +2679,17 @@ function editProfile(userId, name, profileData) {
         const data = await dmCall('history', { pair_id: pairId, before_seq: loadOlder ? oldest : null });
         if (!isCurrent()) return;
         title.textContent = data.name || '卡友';
+        peerName = data.name || '卡友';
+        peerAvatarUrl = data.avatar_url;
+        const identityKey = JSON.stringify([peerName, peerAvatarUrl]);
+        const identityChanged = identityKey !== peerIdentity;
+        if (identityChanged) {
+          peerAvatar.replaceChildren(dmAvatar(peerName, peerAvatarUrl));
+          list.setAttribute('aria-label', '與' + peerName + '的對話');
+          peerIdentity = identityKey;
+        }
         active = data.active;
-        availability.textContent = active ? '僅你與這位卡友可查看對話。訊息每 10 秒更新，可按重新整理立即查看。'
-          : '卡友關係已結束或遭封鎖，目前僅能查看歷史訊息。';
+        availability.textContent = active ? '卡友・可傳送訊息' : '已停止聊天・僅可查看歷史訊息';
         input.disabled = !active;
         send.disabled = !active || sending;
         let changed = false;
@@ -2588,12 +2700,27 @@ function editProfile(userId, name, profileData) {
         const messages = [...cache.values()].sort((a,b) => BigInt(a.seq)<BigInt(b.seq) ? -1 : 1);
         oldest = messages[0]?.seq ?? null;
         if (firstLoad || loadOlder) older.hidden = data.messages.length < 50;
-        if (changed || firstLoad) {
+        if (changed || firstLoad || identityChanged) {
           list.replaceChildren();
           if (!messages.length) list.append(element('p', '還沒有訊息，來向卡友打個招呼吧。', 'small-note'));
+          let previousDay = '';
           for (const message of messages) {
+            const day = dmDay(message.created_at);
+            if (day !== previousDay) {
+              list.append(element('div', day, 'dm-day-divider'));
+              previousDay = day;
+            }
             const row = element('div', '', message.mine ? 'dm-message dm-mine' : 'dm-message');
-            row.append(element('p', message.body), element('time', dmWhen(message.created_at), 'small-note'));
+            const content = element('div', '', 'dm-message-content');
+            if (!message.mine) {
+              row.append(dmAvatar(peerName, peerAvatarUrl, true));
+              content.append(element('span', peerName, 'dm-sender-name'));
+            }
+            const time = element('time', dmClock(message.created_at), 'dm-message-time');
+            time.dateTime = message.created_at;
+            time.title = dmWhen(message.created_at);
+            content.append(element('p', message.body, 'dm-bubble'), time);
+            row.append(content);
             list.append(row);
           }
           if (loadOlder) list.scrollTop += list.scrollHeight-priorHeight;
