@@ -504,6 +504,12 @@
     .sidebar-item:not(:disabled):hover { color: var(--accent-text); }
     .nav-card, .panel, .post { box-shadow: 0 3px 12px rgb(0 0 0 / 8%); }
     .dialog-form input, .dialog-form textarea, .dialog-form select { border-color: var(--line); }
+
+    .draw-person { margin: 12px 0 18px; }
+    .draw-person > img { width: 88px; height: 88px; border-radius: 18px; object-fit: cover; border: 1px solid var(--line); }
+    .draw-person h3 { font-size: 20px; margin: 12px 0 7px; }
+    .draw-bio { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; }
+    .draw-setting { color: var(--accent-text); font-weight: 750; }
   </style>
 </head>
 <body>
@@ -931,6 +937,10 @@ function refreshMembership(userId) {
     if (membershipUserId === userId && membershipRequest) return membershipRequest;
 
     membershipUserId = userId;
+    if (activeNav === 'cardsNav') {
+      cardPageVersion++;
+      navPage.replaceChildren(element('p', '正在更新會員狀態…', 'small-note'));
+    }
     accessLevel = 0;
     profileCompleted = false;
 
@@ -983,6 +993,7 @@ function refreshMembership(userId) {
         await loadMemberPosts();
 
         if (activeNav === 'profileNav') openProfilePage();
+        if (activeNav === 'cardsNav') openCardsPage();
         if (activeNav === 'noticeBtn') openNotificationsPage();
 
       } catch {
@@ -2229,17 +2240,170 @@ function editProfile(userId, name, profileData) {
 }
 
 
-  function openCardsPage() {
+
+  let cardPageVersion = 0;
+  let cardActionBusy = false;
+
+  function cardDate(value) {
+    return new Date(value).toLocaleString('zh-TW', {
+      timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+  }
+
+  async function openCardsPage() {
+    const version = ++cardPageVersion;
     const page = openNavPage('cardsNav', '抽卡');
-    const status = card('抽卡尚未開放');
-    status.append(element('p', '午夜與中午抽卡、卡友邀請與配對將在功能啟用後提供。', 'small-note'));
-    const slots = element('div', '', 'nav-card-grid');
-    for (const title of ['午夜 00:00 的卡片', '中午 12:00 的卡片']) {
-      const slot = card(title);
-      slot.append(element('p', '尚未開放', 'small-note'));
-      slots.append(slot);
+    const intro = card('認識牙科圈的新朋友');
+    intro.append(element('p', '不限感情狀態與性別，以牙科同行交流為主。台灣時間每天 00:00、12:00 各有一次配對機會。', 'small-note'));
+    page.append(intro);
+    if (!currentUser) {
+      memberPrompt(intro, '登入並完成會員資料後，即可選擇加入。');
+      return;
     }
-    page.append(status, slots);
+    const userId = currentUser.id;
+    const loading = card('正在讀取抽卡資料…');
+    page.append(loading);
+    try {
+      const { data, error } = await supabaseClient.rpc('forum_cards', { action_name: 'load' });
+      if (error) throw error;
+      if (version !== cardPageVersion || activeNav !== 'cardsNav' || currentUser?.id !== userId) return;
+      loading.remove();
+      await renderCardsPage(page, data, version, userId);
+    } catch (error) {
+      if (version !== cardPageVersion || activeNav !== 'cardsNav' || currentUser?.id !== userId) return;
+      loading.replaceChildren(element('p', error.code === '22023' ? '請先完成個人資料，包含頭像與簡介，再加入抽卡。'
+        : error.code === '42501' ? '請先完成 Email 驗證後重新登入。' : '抽卡資料暫時無法載入，請稍後重新整理。'));
+      if (error.code === '22023') loading.append(action('完善個人資料', openCompleteProfilePage));
+      else loading.append(action('重新讀取', openCardsPage));
+    }
+  }
+
+  async function performCardAction(actionName, pairId = null, enabled = null) {
+    if (cardActionBusy) return;
+    cardActionBusy = true;
+    const version = cardPageVersion;
+    const userId = currentUser?.id;
+    const status = navPage.querySelector('[role="status"]');
+    if (status) status.textContent = '處理中…';
+    try {
+      const { error } = await supabaseClient.rpc('forum_cards', { action_name: actionName, pair_id: pairId, enabled });
+      if (error) throw error;
+      if (version === cardPageVersion && activeNav === 'cardsNav' && currentUser?.id === userId) await openCardsPage();
+    } catch (error) {
+      if (version === cardPageVersion && activeNav === 'cardsNav' && currentUser?.id === userId && status) {
+        status.textContent = error.code === '42501' ? '目前無權操作，請重新登入。'
+          : error.code === '22023' ? error.message : '無法確認操作結果，請按「重新整理」確認。';
+      }
+    } finally {
+      cardActionBusy = false;
+    }
+  }
+
+  function renderPerson(person) {
+    const section = element('div', '', 'draw-person');
+    if (/^https?:\/\//i.test(person.avatar_url || '')) {
+      const image = element('img', '');
+      image.src = person.avatar_url;
+      image.alt = person.display_name + '的頭像';
+      image.loading = 'lazy';
+      image.referrerPolicy = 'no-referrer';
+      section.append(image);
+    }
+    section.append(element('h3', person.display_name || '會員'),
+      element('p', [person.occupation, person.city].filter(Boolean).join('・'), 'small-note'),
+      element('p', person.bio || '', 'draw-bio'));
+    return section;
+  }
+
+  function renderDrawCard(pair, participating) {
+    const section = card(pair.matched_at ? '卡友' : pair.current ? '本時段的卡片' : '待回應的卡片');
+    if (!pair.person || !pair.available) {
+      section.append(element('p', '這張卡片目前無法互動。對方可能已略過或暫停參加。', 'small-note'));
+      return section;
+    }
+    section.append(renderPerson(pair.person));
+    const controls = element('div', '', 'dialog-actions');
+    if (pair.matched_at) {
+      section.append(element('p', '你們都選擇了想認識，已成為卡友。私訊功能尚未開放。', 'small-note'));
+      controls.append(action('解除卡友', () => {
+        if (confirm('確定解除這段卡友關係？')) return performCardAction('end_friend', pair.id);
+      }));
+    } else {
+      section.append(element('p', '卡片期限｜' + cardDate(pair.expires_at), 'small-note'));
+      if (pair.choice === 'yes') {
+        section.append(element('p', '已送出想認識，等待對方回應。', 'small-note'));
+      } else if (participating) {
+        const yes = action('想認識', () => performCardAction('respond_yes', pair.id));
+        yes.className = 'btn btn-primary';
+        controls.append(yes, action('略過', () => {
+          if (confirm('確定略過這張卡片？本時段不會另抽一位。')) return performCardAction('respond_skip', pair.id);
+        }));
+      }
+    }
+    controls.append(action('封鎖', () => {
+      if (confirm('封鎖後會解除卡友及邀請，雙方不再互相配對。')) return performCardAction('block', pair.id);
+    }));
+    section.append(controls);
+    return section;
+  }
+
+  async function renderCardsPage(page, data, version, userId) {
+    const settings = card('抽卡設定');
+    settings.append(element('p', data.enabled ? '目前正在參加' : '目前尚未參加', 'draw-setting'));
+    settings.append(element('p', '下個時段｜' + cardDate(data.next_at) + '（台灣時間）', 'small-note'));
+    settings.append(action('重新整理', openCardsPage));
+    page.append(settings);
+
+    if (data.enabled) {
+      settings.append(action('暫停參加', () => {
+        if (confirm('暫停後不會獲得新卡片，也暫停未成立邀請。既有卡友仍會保留。')) return performCardAction('join', null, false);
+      }));
+    } else {
+      const preview = card('你的卡片預覽');
+      settings.append(element('p', '加入後，配對會員可看到你的頭像、暱稱、職業、縣市與簡介。Email、行政區與感情狀態不會放在卡片上。', 'small-note'));
+      page.append(preview);
+      try {
+        const { data: profile, error } = await supabaseClient.from('profiles')
+          .select('display_name,avatar_url,occupation,city,bio').eq('id', userId).maybeSingle();
+        if (version !== cardPageVersion || activeNav !== 'cardsNav' || currentUser?.id !== userId) return;
+        if (error || !profile) throw error ?? Error('Profile missing');
+        preview.append(renderPerson(profile));
+        const join = action('同意公開卡片並開始參加', () => performCardAction('join', null, true));
+        join.className = 'btn btn-primary';
+        preview.append(join);
+      } catch {
+        preview.append(element('p', '卡片預覽無法載入，請重新整理後再參加。', 'small-note'));
+      }
+    }
+
+    if (version !== cardPageVersion || activeNav !== 'cardsNav' || currentUser?.id !== userId) return;
+    const pending = data.cards.filter(pair => !pair.matched_at);
+    const friends = data.cards.filter(pair => pair.matched_at);
+    if (data.enabled) {
+      if (!pending.some(pair => pair.current)) {
+        const waiting = card('本時段等待配對');
+        waiting.append(element('p', '目前沒有可配對的會員。請邀請另一位已完成資料的會員加入，再按「重新整理」。每位會員同一時段最多配對一人。', 'small-note'));
+        page.append(waiting);
+      }
+      for (const pair of pending) page.append(renderDrawCard(pair, data.enabled));
+    }
+    const friendList = card('我的卡友');
+    if (!friends.length) friendList.append(element('p', '雙方都選擇「想認識」後，會在這裡看到卡友。', 'small-note'));
+    else for (const pair of friends) friendList.append(renderDrawCard(pair, data.enabled));
+    page.append(friendList);
+    const blocks = card('封鎖名單');
+    if (!data.blocks.length) blocks.append(element('p', '目前沒有封鎖紀錄。', 'small-note'));
+    for (const blocked of data.blocks) {
+      const row = element('div', '', 'nav-history-row');
+      row.append(element('span', blocked.display_name), action('解除封鎖', () => performCardAction('unblock', blocked.id)));
+      blocks.append(row);
+    }
+    if (data.blocks.length) blocks.append(element('p', '解除封鎖後，原有邀請與卡友關係仍維持結束。', 'small-note'));
+    page.append(blocks);
+    const rules = card('配對規則');
+    rules.append(element('p', '參加需驗證 Email 並完成個人資料。每個時段配對一位，雙方會互相看見卡片；同一時段重新整理不會換人。邀請保留 7 天，雙方同意才成為卡友。', 'small-note'),
+      element('p', '已封鎖、仍是卡友、邀請尚在進行，或最近 7 天配對過的會員，不會再次配對。參加人數不足時可能無法取得卡片。', 'small-note'));
+    page.append(rules);
   }
 
   function openMessagesPage() {
